@@ -49,6 +49,26 @@ function InsertDownloadLinks() {
 			);
 		});
 
+		var downloadAll = $("<a href='#'></a>")
+			.prop({
+				"title":"Download page"
+			})
+			.css({
+				"margin-left":"10px"
+			})
+			.click(function(e) {
+				$(this).parents(".thumb-listing-page").eq(0).find(".download-link").each(function() {
+					this.click();
+				});
+				
+				e.preventDefault();
+			})
+			.tipsy({delayIn:500,delayOut:500,fade:!0});
+
+		downloadAll.append("<i class='fa fa-download'></i>");
+
+		$(this).children("header").eq(0).append(downloadAll);
+
 		$(this).data("ewd-download-added", true);
 	})
 }
