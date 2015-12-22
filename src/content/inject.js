@@ -1,6 +1,13 @@
 (function WallhavenExtenderExtension() {
 	function InsertLinks() {
-		$(".thumb-listing-page").each(function(i) {
+		var pages = $(".thumb-listing-page");
+
+		// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61)
+		if (!pages.length) {
+			pages = $(".thumb-listing");
+		}
+
+		pages.each(function(i) {
 			// don't add the links to the same thumbnails more than once
 			if ($(this).data("wee-download-added") === true)
 				return true;
