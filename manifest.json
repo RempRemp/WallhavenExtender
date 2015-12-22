@@ -1,0 +1,36 @@
+{
+  "name": "Wallhaven Extension",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Wallhaven Extension",
+  "icons": {
+    "128": "icons/w.png"
+  },
+  "permissions": [
+    "*://alpha.wallhaven.cc/*",
+    "*://wallhaven.cc/*",
+    "downloads"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://alpha.wallhaven.cc/*",
+        "*://wallhaven.cc/*"
+      ],
+      "css": [
+        "src/content/content.css"
+      ],
+      "js": [
+        "lib/jquery/jquery-2.1.4.min.js",
+        "src/content/content.js"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": ["src/background.js"],
+    "persistent": false
+  },
+  "web_accessible_resources": [
+    "src/content/inject.js"
+  ]
+}
