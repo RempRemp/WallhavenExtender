@@ -18,10 +18,12 @@
         "*://wallhaven.cc/*"
       ],
       "css": [
-        "src/content/content.css"
+        "src/content/content.css",
+        "lib/lightbox2/lightbox.min.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
+        "lib/lightbox2/lightbox.min.js",
         "src/content/content.js"
       ]
     }
@@ -31,6 +33,10 @@
     "persistent": false
   },
   "web_accessible_resources": [
-    "src/content/inject.js"
+    "src/content/inject.js",
+    "lib/lightbox2/images/close.png",
+    "lib/lightbox2/images/loading.gif",
+    "lib/lightbox2/images/next.png",
+    "lib/lightbox2/images/prev.png"
   ]
 }
