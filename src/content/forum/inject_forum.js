@@ -1,18 +1,20 @@
 (function() {
-	function InsertLinks() {
+	function insertThumbnailLinks() {
 		$("figure.thumb").each(function(i) {
+			var $this = $(this);
+
 			// don't add the links to the same thumbnails more than once
-			if ($(this).data("wee-download-added") === true)
+			if ($this.data("wee-download-added") === true)
 				return true;
 
-			wee.addDownloadLink($(this));
+			wee.addDownloadLink($this);
 
-			wee.addPopoutLink($(this));
+			wee.addPopoutLink($this);
 
 			// mark this thumb so it isn't processed again
-			$(this).data("wee-download-added", true);
+			$this.data("wee-download-added", true);
 		});
 	}
 
-	InsertLinks();
+	insertThumbnailLinks();
 })();

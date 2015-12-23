@@ -28,6 +28,7 @@
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
+        "src/content/content_util.js",
         "src/content/content.js"
       ]
     },
@@ -42,6 +43,7 @@
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
+        "src/content/content_util.js",
         "src/content/forum/content_forum.js"
       ]
     }
