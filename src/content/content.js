@@ -1,13 +1,9 @@
-$(document.body).append("<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>");
+$(document.body).append(
+	"<script src='" + chrome.extension.getURL("src/content/inject_util.js") + "'></script>" +
+	"<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>"
+);
 
-// chrome.runtime.onMessage.addListener(
-// 	function(request, sender, sendResponse) {
-// 		//console.log(sender.tab ?
-// 		//	"from a content script:" + sender.tab.url :
-// 		//	"from the extension");
 
-// 		sendResponse({id: request.filename});
-// });
 $(function() {
 	window.addEventListener("message", function(event) {
 		if (event.source != window || event.type != "message")
@@ -34,44 +30,45 @@ $(function() {
         // first image
       	if (typeof oldIndex === "undefined" || oldIndex === 0) {
       		// save the current scroll offset
-      		scrollOffset = $("html, body").scrollTop() - image.offset().top;
+      		scrollOffset = $(window).scrollTop() - image.offset().top;
+      		console.log("offset: " + $(window).scrollTop() + " - " + image.offset().top + " = " + scrollOffset);
       	} else {
+      		// move the lightbox down the page by the pixel difference (vertically) between the 2 images
+      		// so that it doesn't get scrolled off the top
        	 	var oldImage = $("a[data-lightbox='wee-image'][href='" + lightbox.album[oldIndex].link + "']").eq(0).parents("figure.thumb"); 
        	 	
       	 	$("#lightbox").css("top", "+=" + (image.offset().top - oldImage.offset().top));   	  		
       	}
 
-      	$("html, body").scrollTop(image.offset().top + scrollOffset); 
+      	// scroll the page to be in line with the image we are showing in the lightbox
+      	$(window).scrollTop(image.offset().top + scrollOffset); 
       }
     })
 
-	// window.postMessage({ 
-	// 	type: 'from_content',
-	// 	id: "lightbox"
-	// }, '*');
+	function InsertLightboxImages() {
+		if (lightbox.album.length == 0)
+			return;
+
+		var pages = $(".thumb-listing-page");
+
+		// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61)
+		if (!pages.length) {
+			pages = $(".thumb-listing");
+		}
+
+		pages.each(function(i) {
+			// only want the last page (the one that was just loaded)
+			if (i < pages.length - 1)
+				return;
+
+			$(this).find("a[data-lightbox]").each(function(i) {
+				lightbox.album.push({
+					link: $(this).attr("href"),
+			 		title: $(this).attr("data-title")
+			    });
+			})
+		});
+	}
 });
 
 
-function InsertLightboxImages() {
-	if (lightbox.album.length == 0)
-		return;
-
-	var pages = $(".thumb-listing-page");
-
-	// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61)
-	if (!pages.length) {
-		pages = $(".thumb-listing");
-	}
-
-	pages.each(function(i) {
-		if (i < pages.length - 1)
-			return;
-
-		$(this).find("a[data-lightbox]").each(function(i) {
-			lightbox.album.push({
-				link: $(this).attr("href"),
-		 		title: $(this).attr("data-title")
-		    });
-		})
-	});
-}

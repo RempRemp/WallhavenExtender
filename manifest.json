@@ -30,14 +30,26 @@
         "lib/lightbox2/lightbox.js",
         "src/content/content.js"
       ]
+    },
+    {
+      "matches": [
+        "*://alpha.wallhaven.cc/forums/*",
+        "*://wallhaven.cc/forums/*"
+      ],
+      "css": [
+        "lib/lightbox2/lightbox.min.css"
+      ],
+      "js": [
+        "lib/jquery/jquery-2.1.4.min.js",
+        "lib/lightbox2/lightbox.js",
+        "src/content/forum/content_forum.js"
+      ]
     }
   ],
-  "background": {
-    "scripts": ["src/background.js"],
-    "persistent": false
-  },
   "web_accessible_resources": [
     "src/content/inject.js",
+    "src/content/forum/inject_forum.js",
+    "src/content/inject_util.js",
     "lib/lightbox2/images/close.png",
     "lib/lightbox2/images/loading.gif",
     "lib/lightbox2/images/next.png",
