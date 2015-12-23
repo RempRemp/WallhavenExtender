@@ -21,28 +21,42 @@ $(function() {
 	});
 
 	var scrollOffset = 0;
+	var offsetHeight = 0;
 
 	lightbox.option({
-      //disableScrolling: true,
-      scrolled: function(newIndex, oldIndex) {
-        var image = $("a[data-lightbox='wee-image'][href='" + lightbox.album[newIndex].link + "']").eq(0).parents("figure.thumb");
-        
-        // first image
-      	if (typeof oldIndex === "undefined" || oldIndex === 0) {
-      		// save the current scroll offset
-      		scrollOffset = $(window).scrollTop() - image.offset().top;
-      		console.log("offset: " + $(window).scrollTop() + " - " + image.offset().top + " = " + scrollOffset);
-      	} else {
-      		// move the lightbox down the page by the pixel difference (vertically) between the 2 images
-      		// so that it doesn't get scrolled off the top
-       	 	var oldImage = $("a[data-lightbox='wee-image'][href='" + lightbox.album[oldIndex].link + "']").eq(0).parents("figure.thumb"); 
-       	 	
-      	 	$("#lightbox").css("top", "+=" + (image.offset().top - oldImage.offset().top));   	  		
-      	}
+		//disableScrolling: true,
+		scrolled: function(newIndex, oldIndex) {
+			console.log("scrolled " + newIndex + "," + oldIndex);
+			var image = $("a[data-lightbox='wee-image'][href='" + lightbox.album[newIndex].link + "']").eq(0).parents("figure.thumb");
 
-      	// scroll the page to be in line with the image we are showing in the lightbox
-      	$(window).scrollTop(image.offset().top + scrollOffset); 
-      }
+			// first image
+			if (typeof oldIndex === "undefined" || oldIndex === 0) {
+				// save the current scroll offset
+				scrollOffset = $(window).scrollTop() - image.offset().top;
+				offsetHeight = image.offset().top;
+				console.log("offset: " + $(window).scrollTop() + " - " + image.offset().top + " = " + scrollOffset);
+			} else {
+				console.log("window: " + $(window).scrollTop() + ", " + newIndex + " <- " + oldIndex + ", image: " + image.offset().top + ", offsetHeight: " + offsetHeight);
+				// moving up towards the top row but the window is not scrolled
+				// so don't move the lightbox or it will go above the screen
+				if ($(window).scrollTop() == 0 && newIndex < oldIndex) {
+
+				// moving down to a row that isn't far enough down to trigger any window scroll
+				// don't move the lightbox or it will go below the screen
+				} else if ($(window).scrollTop() == 0 && newIndex > oldIndex && image.offset().top <= offsetHeight) {
+
+				} else {
+					// move the lightbox down the page by the pixel difference (vertically) between the 2 images
+					// so that it doesn't get scrolled off the top (since it is static by default)
+				 	var oldImage = $("a[data-lightbox='wee-image'][href='" + lightbox.album[oldIndex].link + "']").eq(0).parents("figure.thumb"); 
+				 	
+				 	$("#lightbox").css("top", "+=" + (image.offset().top - oldImage.offset().top)); 
+			 	}  	  		
+			}
+
+			// scroll the page to be in line with the image we are showing in the lightbox
+			$(window).scrollTop(image.offset().top + scrollOffset); 
+	    }
     })
 
 	function InsertLightboxImages() {
