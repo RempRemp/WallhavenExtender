@@ -17,13 +17,17 @@
         "*://alpha.wallhaven.cc/*",
         "*://wallhaven.cc/*"
       ],
+      "exclude_matches": [
+        "*://alpha.wallhaven.cc/forums/*",
+        "*://wallhaven.cc/forums/*" 
+      ],
       "css": [
         "src/content/content.css",
         "lib/lightbox2/lightbox.min.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
-        "lib/lightbox2/lightbox.min.js",
+        "lib/lightbox2/lightbox.js",
         "src/content/content.js"
       ]
     }

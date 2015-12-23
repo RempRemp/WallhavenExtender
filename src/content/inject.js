@@ -19,13 +19,13 @@
 
 				$(this).append($("<a class='wee-download-link'></a>")
 					.prop({
-						"href": WallpaperURL(wallID) + ".jpg",
-						"download": "wallhaven-" + wallID + ".jpg",
-						"title": "Download"
+						href: WallpaperURL(wallID) + ".jpg",
+						download: "wallhaven-" + wallID + ".jpg",
+						title: "Download"
 					})
 					.css({
-						"right": "30px",
-						"position": "absolute"
+						right: "30px",
+						position: "absolute"
 					})
 					.click(function(e) {
 						// stop the click if we need to validate the file type
@@ -40,22 +40,24 @@
 
 				$(this).append($("<a></a>")
 					.prop({
-						"href": WallpaperURL(wallID) + ".jpg",
-						"title": "Popup",
+						href: WallpaperURL(wallID) + ".jpg",
+						title: "Popout",
 					})
 					.attr({
 						"data-lightbox": "wee-image",
 						"data-title": wallRes + " - Favorites: " + wallFavs
 					})
 					.css({
-						"right": "50px",
-						"position": "absolute"
+						right: "50px",
+						position: "absolute"
 					})
 					.click(function(e) {
 						// if we need to validate the file type then block the click event
 						if (!ValidateFileType($(this), wallID)) {
 							e.preventDefault();
 						}
+
+						//document.body.scrollTop = 300;
 					})
 					.tipsy({delayIn:500,delayOut:500,fade:!0})
 					.append("<i class='fa fa-expand'></i>")
@@ -64,10 +66,10 @@
 
 			var downloadAll = $("<a href='#'></a>")
 				.prop({
-					"title": "Download page"
+					title: "Download page"
 				})
 				.css({
-					"margin-left": "10px"
+					marginLeft: "10px"
 				})
 				.click(function(e) {
 					// find each individual download link that we created and click them
@@ -125,8 +127,33 @@
 		//console.log(xhr);
 		//console.log(settings);
 
+		if (settings.url.startsWith("http://wallpapers.wallhaven.cc/wallpapers/full/")) {
+
+		}
+
+		if (!settings.url.startsWith("http://alpha.wallhaven.cc/search"))
+			return;
+
+		window.postMessage({ 
+			type: "from_inject", 
+			id: "page_loaded",
+		}, '*');
+
 		InsertLinks();
 	});
 
 	InsertLinks();
+
+	window.addEventListener("message", function(event) {
+		if (event.source != window || event.type != "message" || event.data.type == "from_inject")
+			return;
+
+		console.log("inject.js got message: ", event);
+		
+		if (event.data.type == "from_content") {
+			if (event.data.id == "lightbox") {
+				console.log(event.data.data);
+			}
+		}
+	});
 })();
