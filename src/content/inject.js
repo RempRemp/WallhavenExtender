@@ -42,7 +42,8 @@
 		//console.log(xhr);
 		//console.log(settings);
 
-		if (!settings.url.startsWith("http://alpha.wallhaven.cc/search"))
+		if (!settings.url.startsWith("http://alpha.wallhaven.cc/search") &&
+			(!settings.url.startsWith("http://alpha.wallhaven.cc/user/") || settings.url.indexOf("?page=") < 20))
 			return;
 
 		window.postMessage({ 
