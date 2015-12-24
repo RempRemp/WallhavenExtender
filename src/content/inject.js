@@ -9,7 +9,7 @@
 
 			$this.find("figure.thumb").each(function(i) {
 				wee.addDownloadLink($(this));
-				wee.addPopoutLink($(this));
+				wee.addPopoutLink($(this), true);
 			});
 
 			var downloadAll = $("<a href='#'></a>")

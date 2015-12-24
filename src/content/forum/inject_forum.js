@@ -9,7 +9,7 @@
 
 			wee.addDownloadLink($this);
 
-			wee.addPopoutLink($this);
+			wee.addPopoutLink($this, false);
 
 			// mark this thumb so it isn't processed again
 			$this.data("wee-download-added", true);

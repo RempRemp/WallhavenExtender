@@ -32,11 +32,16 @@ var wee = (function() {
 		);
 	}
 
-	var addPopoutLink = function(figure) {
+	var addPopoutLink = function(figure, group) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
 		var wallRes = thumbInfo.children(".wall-res").eq(0).text();
 		var wallFavs = thumbInfo.children(".wall-favs").eq(0).text();
+
+		var lightboxTitle = "wee-image";
+
+		if (group == false)
+			lightboxTitle = "wee-image-" + wallID;
 
 		thumbInfo.append($("<a></a>")
 			.prop({
@@ -44,7 +49,7 @@ var wee = (function() {
 				title: "Popout",
 			})
 			.attr({
-				"data-lightbox": "wee-image",
+				"data-lightbox": lightboxTitle,
 				"data-title": wallRes + " - Favorites: " + wallFavs
 			})
 			.css({
