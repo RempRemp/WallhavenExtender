@@ -49,7 +49,7 @@
 		window.postMessage({ 
 			type: "from_inject", 
 			id: "page_loaded",
-		}, '*');
+		}, "*");
 
 		insertThumbnailLinks();
 	});

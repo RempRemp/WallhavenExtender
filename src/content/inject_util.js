@@ -5,6 +5,9 @@ var wee = (function() {
 	if (!$(pageSelector).length)
 		pageSelector = ".thumb-listing";
 
+	var lightboxOpen = false;
+	var $lightbox = $("#lightbox");
+
 
 	var addDownloadLink = function(figure) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
@@ -13,7 +16,8 @@ var wee = (function() {
 		thumbInfo.append($("<a class='wee-download-link'></a>")
 			.prop({
 				href: buildWallpaperUrl(wallID) + ".jpg",
-				download: "wallhaven-" + wallID + ".jpg",
+				//download: "wallhaven-" + wallID + ".jpg",
+				download: "",
 				title: "Download"
 			})
 			.css({
@@ -68,9 +72,16 @@ var wee = (function() {
 		);
 	}
 
+	var addSidebarDownloadLink = function() {
+		var wall = $("#wallpaper[data-wallpaper-id]").eq(0);
+		var listItem = $("<li><a href='http:" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
+
+		$("#showcase-sidebar").find(".showcase-tools").append(listItem);
+	}
+
 	var validateFileType = function(anchor, id, doClick, completion) {
 		// don't check more than once
-		if (typeof anchor.data("wee-has-type") !== "undefined") 
+		if (anchor.data("wee-has-type") === true) 
 			return true;
 
 		// check if the file exists as a jpg
@@ -116,14 +127,15 @@ var wee = (function() {
 		if (lightboxHasDownloadLink())
 			return;
 
-		$("#lightbox").find('.lb-details').prepend($("<a class='wee-lb-download'></a>")
+		$lightbox.find('.lb-details').prepend($("<a class='wee-lb-download'></a>")
 			.css({
 				display: "inline",
 				marginRight: "10px"
 			})
 			.prop({
 				href: url,
-				download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
+				//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
+				download: "",
 				title: "Download"
 			})
 			.click(function(event) {
@@ -139,14 +151,14 @@ var wee = (function() {
 		if (!lightboxHasDownloadLink())
 			return;
 
-		$("#lightbox").find('.lb-details .wee-lb-download').prop({
+		$lightbox.find('.lb-details .wee-lb-download').prop({
 			href: url,
-			download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
+			//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
 		});
 	}
 
 	var lightboxHasDownloadLink = function() {
-		return $("#lightbox").find('.lb-details .wee-lb-download').length > 0;
+		return $lightbox.find('.lb-details .wee-lb-download').length > 0;
 	}
 
 	// get the next thumbnail on the page after the given one
@@ -187,31 +199,39 @@ var wee = (function() {
 		return undefined;
 	}
 
-	// forcibly validate the images on either side (2 in both directions) of the given image
-	var validateSurroundingImages = function(figure, startIndex, onlyButOne) {
+	// forcibly validate the images on either side (up to 2 in both directions) of the given image
+	var validateSurroundingImages = function(figure, startIndex, targetIndexes) {
 		var surrounding = [];
-		var prev = previousThumbnail(figure);
 
-		if (typeof prev !== "undefined") {
-			if (!onlyButOne)
-				surrounding.push({thumb: prev, index: startIndex - 1});
+		if (targetIndexes === undefined)
+			targetIndexes = [-2, -1, 1, 2];
 
-			var prevButOne = previousThumbnail(prev);
+		if (targetIndexes.indexOf(-1) !== -1 || targetIndexes.indexOf(-2) !== -1) {
+			var prev = previousThumbnail(figure);
 
-			if (typeof prevButOne !== "undefined")
-				surrounding.push({thumb: prevButOne, index: startIndex - 2});
+			if (prev !== undefined) {
+				if (targetIndexes.indexOf(-1) !== -1)
+					surrounding.push({thumb: prev, index: startIndex - 1});
+
+				var prevButOne = previousThumbnail(prev);
+
+				if (prevButOne !== undefined && targetIndexes.indexOf(-2) !== -1)
+					surrounding.push({thumb: prevButOne, index: startIndex - 2});
+			}
 		}
 
-		var next = nextThumbnail(figure);
+		if (targetIndexes.indexOf(1) !== -1 || targetIndexes.indexOf(2) !== -1) {
+			var next = nextThumbnail(figure);
 
-		if (typeof next !== "undefined") {
-			if (!onlyButOne)
-				surrounding.push({thumb: next, index: startIndex + 1});
+			if (next !== undefined) {
+				if (targetIndexes.indexOf(1) !== -1)
+					surrounding.push({thumb: next, index: startIndex + 1});
 
-			var nextButOne = nextThumbnail(next);
+				var nextButOne = nextThumbnail(next);
 
-			if (typeof nextButOne !== "undefined")
-				surrounding.push({thumb: nextButOne, index: startIndex + 2});
+				if (nextButOne !== undefined && targetIndexes.indexOf(2) !== -1)
+					surrounding.push({thumb: nextButOne, index: startIndex + 2});
+			}
 		}
 
 		for (var i = 0; i < surrounding.length; i++) {
@@ -220,17 +240,15 @@ var wee = (function() {
 			a.data("wee-validate-id", surrounding[i].index);
 
 			validateFileType(a, surrounding[i].thumb.data("wallpaper-id"), false, function(anchor) {
-
 				window.postMessage({ 
 					type: "from_inject", 
 					id: "lightbox_image_validated",
 					index: anchor.data("wee-validate-id"),
 					href: anchor.prop("href")
-				}, '*');
+				}, "*");
 			});
 		}
 	}
-
 
 
 	window.addEventListener("message", function(event) {
@@ -239,22 +257,46 @@ var wee = (function() {
 
 		if (event.data.type == "from_content") {
 			if (event.data.id == "lightbox_opened") {
+				lightboxOpen = true;
+
 				if (lightboxHasDownloadLink())
 					updateLightboxDownload(event.data.href);
 				else
 					insertLightboxDownload(event.data.href);
 
 				// force validate the surrounding images so that they don't 404
-				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, false);
+				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [-2, -1, 1, 2]);
 			} else if (event.data.id == "lightbox_scrolled") {
 				updateLightboxDownload(event.data.href);
 
 				// only update the edges (e.g. [-2, -1, 0, 1, 2] - validate -2 and 2 but not the immediate neighbours)
 				// because the immediate neighbours would have been validated by the previous scroll (or the opening)
-				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, true);
+				if (event.data.newIndex > event.data.oldIndex) {
+					validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [2]);
+				} else if (event.data.oldIndex > event.data.newIndex) {
+					validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [-2]);
+				}
+			} else if (event.data.id == "lightbox_closed") {
+				lightboxOpen = false;
 			}
 		}
 	});	
+
+	$(document).on('keyup.keyboard', function(event) {
+		if (lightboxOpen == false)
+			return;
+
+		// down arrow pressed, download the current image
+		if (event.keyCode == 40) {
+			$lightbox.find('.lb-details .wee-lb-download').eq(0)[0].click();
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	});
+
+	if ($("#showcase-sidebar").length) {
+		addSidebarDownloadLink();	
+	}
 
 	return {
 		pageSelector: pageSelector,
