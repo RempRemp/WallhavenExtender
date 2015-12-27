@@ -1,0 +1,20 @@
+.wee-lb-desc {
+	display: inline;
+	margin-right: 10px;
+}
+
+.thumb>.thumb-info>.wee-link {
+	position: absolute;
+	top: 0;
+	line-height: inherit;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+.wee-download-link {
+	right: 25px;
+}
+
+.wee-popout-link {
+	right: 50px;
+}

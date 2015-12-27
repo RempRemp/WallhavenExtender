@@ -5,11 +5,16 @@ var wee = (function() {
 	if (!$(pageSelector).length)
 		pageSelector = ".thumb-listing";
 
+	var $lightbox = $("#lightbox");
+	var waitingPages = [];
+
+
 	lightbox.option({
 		disableScrolling: true
 	});
+
 	
-	$("#lightbox").on("scrolled.lightbox", function(event, newIndex, oldIndex) {
+	$lightbox.on("scrolled.lightbox", function(event, newIndex, oldIndex) {
 		if (oldIndex === undefined) {
 			window.postMessage({ 
 				type: "from_content", 
@@ -36,7 +41,134 @@ var wee = (function() {
 	});
 
 
+	window.addEventListener("message", function(event) {
+		if (event.source != window || event.type != "message")
+			return;
+
+		if (event.data.type == "from_inject") {
+			if (event.data.id == "page_added") {
+				// this has to be delayed until after the injected scripts have pushed our data into the dom
+				// if it is inside pageAdded the required data (i.e. the href attr) does not yet exist in the dom
+				if (lightbox.isOpen === true) {
+					// insert the newly loaded thumbnails into the lightbox
+					for (var i = 0; i < waitingPages.length; i++) {
+						waitingPages[i].find("a[data-lightbox]").each(function(i) {
+							lightbox.album.push({
+								link: $(this).attr("href"),
+						 		title: $(this).attr("data-title")
+						    });
+						});
+					}
+
+					waitingPages = [];
+				}				
+			}
+		} else if (event.data.type == "from_content") {
+			if (event.data.id == "lightbox_closed") {
+				waitingPages = [];
+			}
+		}
+	});
+
+
+	pageAdded = function(page) {
+		if (lightbox.isOpen === true)
+			waitingPages.push(page);
+
+		window.postMessage({ 
+			type: "from_content", 
+			id: "page_added"
+		}, "*");
+	}
+
+	pageRemoved = function(page) {
+		if (lightbox.isOpen === true) {
+			var removed = 0;
+
+			// delete all the thumbnails on the removed page from the lightbox album
+			page.find("li").each(function(index) {
+				var url = $(this).find(".wee-download-link").attr("href");
+
+				if (typeof url !== "string")
+					return true;
+
+				var i = albumIndexOf(url);
+
+				if (i !== -1) {
+					lightbox.album.splice(i, 1);
+					removed++;
+				}
+			});
+
+			lightbox.currentImageIndex -= removed;
+
+			// re-adjust the lightbox position since removing the page shrunk the site height
+			$lightbox.css("top", ($(window).scrollTop() + lightbox.options.positionFromTop) + "px");	
+		}
+
+		window.postMessage({ 
+			type: "from_content", 
+			id: "page_removed"
+		}, "*");
+	}
+
+	// custom array.indexOf that filters by url in the lightbox album list
+	albumIndexOf = function(url) {
+		for (var i = 0; i < lightbox.album.length; i++) {
+			if (lightbox.album[i].link === url)
+				return i;
+		}
+
+		return -1;
+	}
+
+	swapFileType = function(url) {
+		return url.slice(0, -3) + (url.substr(-3) === "jpg" ? "png" : "jpg");
+	}
+
+
+	// watch for changes in the thumbnail page list (e.g. adding/removing pages)
+	var pageContainer = $(pageSelector).parent();
+
+	if (pageContainer.length) {
+		var observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.type === "childList") {
+					if (mutation.addedNodes.length > 0) {
+						for (var i = 0; i < mutation.addedNodes.length; i++) {
+							var node = $(mutation.addedNodes[i]);
+
+							if (node.hasClass("thumb-listing-page"))
+								pageAdded(node);
+						}
+						//console.log("added " + mutation.addedNodes.length + ": ", mutation.addedNodes);
+					}
+
+					if (mutation.removedNodes.length > 0) {
+						for (var i = 0; i < mutation.removedNodes.length; i++) {
+							var node = $(mutation.removedNodes[i]);
+
+							if (node.hasClass("thumb-listing-page"))
+								pageRemoved(node);
+						}
+
+						//console.log("removed " + mutation.removedNodes.length + ": ", mutation.removedNodes);
+					}
+				}
+			});    
+		});
+
+		observer.observe(pageContainer[0], { 
+			childList: true, 
+			attributes: false, 
+			characterData: false, 
+			subtree: false 
+		});
+	}
+
 	return {
-		pageSelector: pageSelector
+		$lightbox: $lightbox,
+		albumIndexOf: albumIndexOf,
+		swapFileType: swapFileType
 	}
 })();

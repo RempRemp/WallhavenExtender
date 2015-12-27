@@ -13,16 +13,12 @@ var wee = (function() {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
 
-		thumbInfo.append($("<a class='wee-download-link'></a>")
+		thumbInfo.append($("<a class='wee-download-link wee-link'></a>")
 			.prop({
-				href: buildWallpaperUrl(wallID) + ".jpg",
+				href: buildWallpaperDirectUrl(wallID) + ".jpg",
 				//download: "wallhaven-" + wallID + ".jpg",
 				download: "",
 				title: "Download"
-			})
-			.css({
-				right: "30px",
-				position: "absolute"
 			})
 			.click(function(event) {
 				// stop the click if we need to validate the file type
@@ -31,34 +27,31 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy({delayIn:500,delayOut:500,fade:!0})
-			.append("<i class='fa fa-download'></i>")
+			.tipsy({
+				delayIn: 500,
+				delayOut: 500,
+				fade: !0
+			})
+			.append("<i class='fa fa-fw fa-download'></i>")
 		);
 	}
 
 	var addPopoutLink = function(figure, group) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
-		var wallRes = thumbInfo.children(".wall-res").eq(0).text();
-		var wallFavs = thumbInfo.children(".wall-favs").eq(0).text();
-
 		var lightboxTitle = "wee-image";
 
 		if (group == false)
 			lightboxTitle = "wee-image-" + wallID;
 
-		thumbInfo.append($("<a></a>")
+		thumbInfo.append($("<a class='wee-popout-link wee-link'></a>")
 			.prop({
-				href: buildWallpaperUrl(wallID) + ".jpg",
+				href: buildWallpaperDirectUrl(wallID) + ".jpg",
 				title: "Popout",
 			})
 			.attr({
 				"data-lightbox": lightboxTitle,
-				"data-title": wallRes + " - Favorites: " + wallFavs
-			})
-			.css({
-				right: "50px",
-				position: "absolute"
+				"data-title": thumbInfo.children(".wall-res").eq(0).text() + " - Favorites: " + thumbInfo.children(".wall-favs").eq(0).text()
 			})
 			.click(function(event) {
 				// if we need to validate the file type then block the click event
@@ -67,8 +60,12 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy({delayIn:500,delayOut:500,fade:!0})
-			.append("<i class='fa fa-expand'></i>")
+			.tipsy({
+				delayIn: 500,
+				delayOut: 500,
+				fade: !0
+			})
+			.append("<i class='fa fa-fw fa-expand'></i>")
 		);
 	}
 
@@ -94,25 +91,31 @@ var wee = (function() {
 			},
 			error: function() {
 				// png
-				anchor.prop("href", buildWallpaperUrl(id) + ".png");
+				anchor.prop("href", buildWallpaperDirectUrl(id) + ".png");
 			},
-			complete: function() {
+			complete: function(xhr, status) {
 				anchor.data("wee-has-type", true);
 
 				if (doClick == true)
 					// simulate a real click (not a jquery click)
 					anchor[0].click();
 
-				if (typeof completion === "function")
-					completion(anchor);
+				if (typeof completion === "function") {
+					var correctedType = status === "error" ? "png" : "jpg";
+					completion(anchor, correctedType);
+				}
 			}
 		});	
 
 		return false;
 	}
 
-	var buildWallpaperUrl = function(id) {
+	var buildWallpaperDirectUrl = function(id) {
 		return "http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
+	}
+
+	var buildWallpaperViewUrl = function(id) {
+		return "http://alpha.wallhaven.cc/wallpaper/" + id;
 	}
 
 	//http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-123456.jpg -> 123456
@@ -123,15 +126,28 @@ var wee = (function() {
 	}
 
 	// insert a download link into the lightbox description area
-	var insertLightboxDownload = function(url) {
-		if (lightboxHasDownloadLink())
+	var insertLightboxLinks = function(url) {
+		if (lightboxHasLinks())
 			return;
 
-		$lightbox.find('.lb-details').prepend($("<a class='wee-lb-download'></a>")
-			.css({
-				display: "inline",
-				marginRight: "10px"
+		var id = idFromUrl(url);
+
+		$lightbox.find(".lb-details").prepend($("<a class='wee-lb-view wee-lb-desc'></a>")
+			.prop({
+				href: buildWallpaperViewUrl(id),
+				title: "View Wallpaper",
+				target: "_blank"
 			})
+			.click(function(event) {
+				event.stopPropagation();
+			})
+			.tipsy({
+				delayIn: 500,
+				delayOut: 500,
+				fade: !0
+			})
+			.append("<i class='fa fa-fw fa-picture-o'></i>")
+		).prepend($("<a class='wee-lb-download wee-lb-desc'></a>")
 			.prop({
 				href: url,
 				//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
@@ -142,22 +158,28 @@ var wee = (function() {
 				event.stopPropagation();
 			})
 			.tipsy({delayIn:500,delayOut:500,fade:!0})
-			.append("<i class='fa fa-download'></i>")
+			.append("<i class='fa fa-fw fa-download'></i>")
 		);
 	}
 
 	// update the download link url every time the lightbox changes image
-	var updateLightboxDownload = function(url) {
-		if (!lightboxHasDownloadLink())
+	var updateLightboxLinks = function(url) {
+		if (!lightboxHasLinks())
 			return;
 
-		$lightbox.find('.lb-details .wee-lb-download').prop({
+		var id = idFromUrl(url);
+
+		$lightbox.find(".lb-details .wee-lb-download").prop({
 			href: url,
 			//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
 		});
+
+		$lightbox.find(".lb-details .wee-lb-view").prop({
+			href: buildWallpaperViewUrl(id)
+		});
 	}
 
-	var lightboxHasDownloadLink = function() {
+	var lightboxHasLinks = function() {
 		return $lightbox.find('.lb-details .wee-lb-download').length > 0;
 	}
 
@@ -239,12 +261,13 @@ var wee = (function() {
 			// temp the index data in the dom because it will be lost in the closure
 			a.data("wee-validate-id", surrounding[i].index);
 
-			validateFileType(a, surrounding[i].thumb.data("wallpaper-id"), false, function(anchor) {
+			validateFileType(a, surrounding[i].thumb.data("wallpaper-id"), false, function(anchor, correctType) {
 				window.postMessage({ 
 					type: "from_inject", 
 					id: "lightbox_image_validated",
 					index: anchor.data("wee-validate-id"),
-					href: anchor.prop("href")
+					href: anchor.prop("href"),
+					correctType: correctType
 				}, "*");
 			});
 		}
@@ -259,23 +282,26 @@ var wee = (function() {
 			if (event.data.id == "lightbox_opened") {
 				lightboxOpen = true;
 
-				if (lightboxHasDownloadLink())
-					updateLightboxDownload(event.data.href);
+				if (lightboxHasLinks())
+					updateLightboxLinks(event.data.href);
 				else
-					insertLightboxDownload(event.data.href);
+					insertLightboxLinks(event.data.href);
 
 				// force validate the surrounding images so that they don't 404
 				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [-2, -1, 1, 2]);
 			} else if (event.data.id == "lightbox_scrolled") {
-				updateLightboxDownload(event.data.href);
+				updateLightboxLinks(event.data.href);
 
 				// only update the edges (e.g. [-2, -1, 0, 1, 2] - validate -2 and 2 but not the immediate neighbours)
 				// because the immediate neighbours would have been validated by the previous scroll (or the opening)
-				if (event.data.newIndex > event.data.oldIndex) {
-					validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [2]);
-				} else if (event.data.oldIndex > event.data.newIndex) {
-					validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [-2]);
-				}
+				var neighbours = [];
+
+				if (event.data.newIndex > event.data.oldIndex)
+					neighbours = [2];
+				else if (event.data.oldIndex > event.data.newIndex)
+					neighbours = [-2];
+
+				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, neighbours);
 			} else if (event.data.id == "lightbox_closed") {
 				lightboxOpen = false;
 			}
@@ -303,7 +329,7 @@ var wee = (function() {
 		addDownloadLink: addDownloadLink,
 		addPopoutLink: addPopoutLink,
 		validateFileType: validateFileType,
-		buildWallpaperUrl: buildWallpaperUrl,
+		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
 		idFromUrl: idFromUrl
 	}
 })();

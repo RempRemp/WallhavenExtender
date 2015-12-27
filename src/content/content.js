@@ -13,56 +13,64 @@ $(function() {
 			return;
 
 		if (event.data.type == "from_inject") {
-			if (event.data.id == "page_loaded") {
-				insertLightboxImages();
-			} else if (event.data.id == "lightbox_image_validated") {
-				if (lightbox.isOpen == false)
-					return;
-
-				//console.log("validated " + event.data.href + " (from " + lightbox.album[event.data.index].link + ")");
-
-				lightbox.album[event.data.index].link = event.data.href;
+			if (event.data.id == "lightbox_image_validated") {
+				lightboxImageValidated(event.data);
 			}
 		} else if (event.data.type == "from_content") {
 			if (event.data.id == "lightbox_opened") {
-				var image = $("a[data-lightbox='wee-image'][href='" + event.data.href + "']").eq(0).parents("figure.thumb");
-
-				// save the current scroll offset
-				scrollOffset = $(window).scrollTop() - image.offset().top;				
+				lightboxOpened(event.data);
 			} else if (event.data.id == "lightbox_scrolled") {
-				var image = $("a[data-lightbox='wee-image'][href='" + event.data.href + "']").eq(0).parents("figure.thumb");
-
-				// temporarily enable scrolling
-				$body.removeClass("lb-disable-scrolling");
-
-				// scroll the page to be in line with the image we are showing in the lightbox
-				$window.scrollTop(image.offset().top + scrollOffset); 
-
-				$body.addClass("lb-disable-scrolling");
-
-				//console.log("top: " + image.offset().top + " + " + scrollOffset + " + " + lightbox.options.positionFromTop + " = " + (image.offset().top + scrollOffset + lightbox.options.positionFromTop) + " (" + $window.scrollTop() + ")");
-				$("#lightbox").css("top", (image.offset().top + scrollOffset + lightbox.options.positionFromTop) + "px");	
+				lightboxScrolled(event.data);
 			}
 		}
 	});
 
-	// push the images that have just ajax-loaded into the current slideshow
-	insertLightboxImages = function() {
-		if (lightbox.isOpen == false)
+	var lightboxOpened = function(data) {
+		var image = $("a[data-lightbox='wee-image'][href='" + data.href + "']").eq(0).parents("figure.thumb");
+
+		if (!image.length)
+			image = $("a[data-lightbox='wee-image'][href='" + wee.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
+
+		// save the current scroll offset
+		scrollOffset = $(window).scrollTop() - image.offset().top;				
+	}
+
+	var lightboxScrolled = function(data) {
+		var image = $("a[data-lightbox='wee-image'][href='" + data.href + "']").eq(0).parents("figure.thumb");
+
+		if (!image.length)
+			image = $("a[data-lightbox='wee-image'][href='" + wee.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
+
+		if (!image.length) {
+			console.log("cannot find image " + data.href);
+			return;
+		}
+
+		// temporarily enable scrolling
+		$body.removeClass("lb-disable-scrolling");
+
+		// scroll the page to be in line with the image we are showing in the lightbox
+		// this (handily) forces the page to load in new thumbnail pages as we scroll down
+		$window.scrollTop(image.offset().top + scrollOffset); 
+
+		$body.addClass("lb-disable-scrolling");
+
+		// move the lightbox back to the correct central position in the window
+		wee.$lightbox.css("top", ($window.scrollTop() + lightbox.options.positionFromTop) + "px");			
+	}
+
+	var lightboxImageValidated = function(data) {
+		if (lightbox.isOpen === false)
 			return;
 
-		$(wee.pageSelector).each(function(i) {
-			// only want the last page (the one that was just loaded)
-			if (i < $(wee.pageSelector).length - 1)
-				return;
-			
-			$(this).find("a[data-lightbox]").each(function(i) {
-				lightbox.album.push({
-					link: $(this).attr("href"),
-			 		title: $(this).attr("data-title")
-			    });
-			})
-		});
+		if (data.correctType == "png") {					
+			var i = wee.albumIndexOf(data.href.slice(0, -3) + "jpg");
+
+			if (i !== -1)
+				lightbox.album[i].link = data.href;
+			else
+				console.log("could not find " + data.href + " in album");
+		}
 	}
 });
 

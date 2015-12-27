@@ -21,9 +21,9 @@
         "*://alpha.wallhaven.cc/forums/*",
         "*://wallhaven.cc/forums/*" 
       ],
-      "css": [
-        "src/content/content.css",
-        "lib/lightbox2/lightbox.min.css"
+      "css": [       
+        "lib/lightbox2/lightbox.min.css",
+        "src/content/content.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
@@ -38,7 +38,8 @@
         "*://wallhaven.cc/forums/*"
       ],
       "css": [
-        "lib/lightbox2/lightbox.min.css"
+        "lib/lightbox2/lightbox.min.css",
+        "src/content/content.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
