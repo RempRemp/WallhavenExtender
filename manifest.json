@@ -1,8 +1,8 @@
 {
-  "name": "Wallhaven Extension",
+  "name": "Wallhaven Extender",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Wallhaven.cc Extension",
+  "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
     "128": "icons/icon128.png",
     "48": "icons/icon48.png",

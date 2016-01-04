@@ -59,6 +59,7 @@ $(function() {
 		wee.$lightbox.css("top", ($window.scrollTop() + lightbox.options.positionFromTop) + "px");			
 	}
 
+	// this is done in the content scripts becuse injected scripts don't have access to the lightbox global object
 	var lightboxImageValidated = function(data) {
 		if (lightbox.isOpen === false)
 			return;
