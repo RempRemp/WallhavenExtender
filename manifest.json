@@ -4,7 +4,9 @@
   "manifest_version": 2,
   "description": "Wallhaven Extension",
   "icons": {
-    "128": "icons/w.png"
+    "128": "icons/icon128.png",
+    "48": "icons/icon48.png",
+    "32": "icons/icon32.png"
   },
   "permissions": [
     "*://alpha.wallhaven.cc/*",
