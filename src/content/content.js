@@ -66,7 +66,7 @@ $(function() {
 		// update the lightbox image url now that the file type has been validated
 		// if it has been validated as jpg don't do anything (since that is the default)
 		if (data.correctType === "png") {					
-			var i = wee.albumIndexOf(data.href.slice(0, -3) + "jpg");
+			var i = wee.albumIndexOf(data.href);
 
 			if (i !== -1)
 				lightbox.album[i].link = data.href;

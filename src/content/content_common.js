@@ -115,8 +115,10 @@ var wee = (function() {
 	// custom array.indexOf that filters by url in the lightbox album list
 	albumIndexOf = function(url) {
 		for (var i = 0; i < lightbox.album.length; i++) {
-			if (lightbox.album[i].link === url)
+			// strip the file type so that we match regardless of extension
+			if (lightbox.album[i].link.indexOf(url.slice(0, -3)) >= 0) {
 				return i;
+			}
 		}
 
 		return -1;
