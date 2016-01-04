@@ -2,7 +2,7 @@
   "name": "Wallhaven Extension",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Wallhaven Extension",
+  "description": "Wallhaven.cc Extension",
   "icons": {
     "128": "icons/icon128.png",
     "48": "icons/icon48.png",
@@ -24,7 +24,7 @@
         "*://wallhaven.cc/forums/*" 
       ],
       "css": [       
-        "lib/lightbox2/lightbox.min.css",
+        "lib/lightbox2/lightbox.css",
         "src/content/content.css"
       ],
       "js": [
@@ -40,7 +40,7 @@
         "*://wallhaven.cc/forums/*"
       ],
       "css": [
-        "lib/lightbox2/lightbox.min.css",
+        "lib/lightbox2/lightbox.css",
         "src/content/content.css"
       ],
       "js": [

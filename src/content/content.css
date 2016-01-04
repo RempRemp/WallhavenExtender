@@ -1,6 +1,6 @@
 .wee-lb-desc {
 	display: inline;
-	margin-right: 10px;
+	margin-right: 15px;
 }
 
 .thumb>.thumb-info>.wee-link {
@@ -17,4 +17,33 @@
 
 .wee-popout-link {
 	right: 50px;
+}
+
+.wee-lb-desc.wee-lb-fav, .wee-lb-desc.wee-lb-unfav {	
+	border-radius: 1.5em;
+	border: 1px solid white;
+	text-shadow: 0 1px 1px #000;
+	transition-delay: .1s;
+	margin-left: 5px;
+}
+
+.wee-lb-desc.wee-lb-fav {
+	background-color: #d5bf2a;
+}
+
+.wee-lb-desc.wee-lb-fav:hover {
+	background-color: #e6d97f;
+}
+
+.wee-lb-desc.wee-lb-unfav {
+	background-color: #490;
+}
+
+.wee-lb-desc.wee-lb-unfav:hover {
+	background-color: #d33;
+	text-shadow: 0 1px 1px #700;
+}
+
+.wee-lb-desc.wee-lb-unfav:hover .fa:before {
+	content: "\f00d"
 }

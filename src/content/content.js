@@ -42,7 +42,7 @@ $(function() {
 			image = $("a[data-lightbox='wee-image'][href='" + wee.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
 
 		if (!image.length) {
-			console.log("cannot find image " + data.href);
+			console.log("lightbox scroll cannot find image " + data.href);
 			return;
 		}
 
@@ -63,7 +63,9 @@ $(function() {
 		if (lightbox.isOpen === false)
 			return;
 
-		if (data.correctType == "png") {					
+		// update the lightbox image url now that the file type has been validated
+		// if it has been validated as jpg don't do anything (since that is the default)
+		if (data.correctType === "png") {					
 			var i = wee.albumIndexOf(data.href.slice(0, -3) + "jpg");
 
 			if (i !== -1)

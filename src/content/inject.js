@@ -28,11 +28,7 @@
 					
 			// 		e.preventDefault();
 			// 	})
-			// 	.tipsy({
-			// 		delayIn: 500,
-			// 		delayOut: 500,
-			// 		fade: !0
-			// 	})
+			// 	.tipsy(wee.tipsySettings)
 			// 	.append("<i class='fa fa-download'></i>");
 
 			// $this.children("header").eq(0).append(downloadAll);

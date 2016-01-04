@@ -7,13 +7,19 @@ var wee = (function() {
 
 	var lightboxOpen = false;
 	var $lightbox = $("#lightbox");
+	var tipsySettings = {				
+		delayIn: 500,
+		delayOut: 500,
+		fade: true
+	}
 
 
+	// basic download link on the rollover menu for each thumbnail
 	var addDownloadLink = function(figure) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
 
-		thumbInfo.append($("<a class='wee-download-link wee-link'></a>")
+		thumbInfo.append($("<a class='wee-download-link wee-link'><i class='fa fa-fw fa-download'></i></a>")
 			.prop({
 				href: buildWallpaperDirectUrl(wallID) + ".jpg",
 				//download: "wallhaven-" + wallID + ".jpg",
@@ -27,15 +33,11 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy({
-				delayIn: 500,
-				delayOut: 500,
-				fade: !0
-			})
-			.append("<i class='fa fa-fw fa-download'></i>")
+			.tipsy(tipsySettings)
 		);
 	}
 
+	// link to load the image into a slideshow on the rollover menu for each thumbnail
 	var addPopoutLink = function(figure, group) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
@@ -44,14 +46,14 @@ var wee = (function() {
 		if (group == false)
 			lightboxTitle = "wee-image-" + wallID;
 
-		thumbInfo.append($("<a class='wee-popout-link wee-link'></a>")
+		thumbInfo.append($("<a class='wee-popout-link wee-link'><i class='fa fa-fw fa-expand'></i></a>")
 			.prop({
 				href: buildWallpaperDirectUrl(wallID) + ".jpg",
 				title: "Popout",
 			})
 			.attr({
 				"data-lightbox": lightboxTitle,
-				"data-title": thumbInfo.children(".wall-res").eq(0).text() + " - Favorites: " + thumbInfo.children(".wall-favs").eq(0).text()
+				"data-title": thumbInfo.children(".wall-res").eq(0).text()
 			})
 			.click(function(event) {
 				// if we need to validate the file type then block the click event
@@ -60,15 +62,11 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy({
-				delayIn: 500,
-				delayOut: 500,
-				fade: !0
-			})
-			.append("<i class='fa fa-fw fa-expand'></i>")
+			.tipsy(tipsySettings)
 		);
 	}
 
+	// add a download link to the sidebar on the image info page (e.g. the one reached by clicking a thumbnail)
 	var addSidebarDownloadLink = function() {
 		var wall = $("#wallpaper[data-wallpaper-id]").eq(0);
 		var listItem = $("<li><a href='http:" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
@@ -76,6 +74,7 @@ var wee = (function() {
 		$("#showcase-sidebar").find(".showcase-tools").append(listItem);
 	}
 
+	// check which file type this image has (most are jpg (default), but a few are png)
 	var validateFileType = function(anchor, id, doClick, completion) {
 		// don't check more than once
 		if (anchor.data("wee-has-type") === true) 
@@ -131,8 +130,38 @@ var wee = (function() {
 			return;
 
 		var id = idFromUrl(url);
+		var figure = $("figure[data-wallpaper-id=" + id + "]");	
 
-		$lightbox.find(".lb-details").prepend($("<a class='wee-lb-view wee-lb-desc'></a>")
+		// add the "add to favorites"/"remove from favorites" button
+		var isFaved = figure.find(".thumb-btn-unfav").length > 0;
+		var favClass = isFaved ? "unfav" : "fav";
+		var favs = figure.find(".thumb-info").children(".wall-favs").eq(0).text();
+
+		var favButton = $("<a class='thumb-btn-" + favClass + " wee-lb-" + favClass + " wee-lb-desc'><i class='fa fa-fw fa-star'></i></a>")
+			.prop({
+				href: buildWallpaperDirectUrl(id) + ".jpg",
+				title: isFaved ? "Remove from favorites" : "Add to favorites"
+			})
+			.click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+
+				// we can't really route to/replicate whatever js this button actually does behind the scenes,
+				// so just fake a click on the original "add to/remove from favorites" button
+				var _id = idFromUrl($(this).prop("href"));
+				var original = $("figure[data-wallpaper-id=" + _id + "]");
+
+				if (original.find(".thumb-btn-unfav").length > 0)
+					original.children(".thumb-btn-unfav")[0].click();
+				else
+					original.children(".thumb-btn-fav")[0].click();
+			})
+			.tipsy(tipsySettings)
+
+
+		$lightbox.find(".lb-details").prepend(favButton).prepend(favs)
+		// add the "view wallpaper" button that loads the wallpaper info page in a new tab
+		.prepend($("<a class='wee-lb-view wee-lb-desc'><i class='fa fa-fw fa-picture-o'></i></a>")
 			.prop({
 				href: buildWallpaperViewUrl(id),
 				title: "View Wallpaper",
@@ -141,13 +170,9 @@ var wee = (function() {
 			.click(function(event) {
 				event.stopPropagation();
 			})
-			.tipsy({
-				delayIn: 500,
-				delayOut: 500,
-				fade: !0
-			})
-			.append("<i class='fa fa-fw fa-picture-o'></i>")
-		).prepend($("<a class='wee-lb-download wee-lb-desc'></a>")
+			.tipsy(tipsySettings)
+		// add the "download" button
+		).prepend($("<a class='wee-lb-download wee-lb-desc'><i class='fa fa-fw fa-download'></i></a>")
 			.prop({
 				href: url,
 				//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
@@ -157,19 +182,18 @@ var wee = (function() {
 			.click(function(event) {
 				event.stopPropagation();
 			})
-			.tipsy({delayIn:500,delayOut:500,fade:!0})
-			.append("<i class='fa fa-fw fa-download'></i>")
+			.tipsy(tipsySettings)
 		);
 	}
 
-	// update the download link url every time the lightbox changes image
+	// update the download link url every time the lightbox changes image (scrolls left/right, opens)
 	var updateLightboxLinks = function(url) {
 		if (!lightboxHasLinks())
 			return;
 
 		var id = idFromUrl(url);
 
-		$lightbox.find(".lb-details .wee-lb-download").prop({
+		$lightbox.find(".lb-details .wee-lb-download, .lb-details .wee-lb-fav, .lb-details .wee-lb-unfav").prop({
 			href: url,
 			//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
 		});
@@ -177,6 +201,10 @@ var wee = (function() {
 		$lightbox.find(".lb-details .wee-lb-view").prop({
 			href: buildWallpaperViewUrl(id)
 		});
+
+		var favs = $("figure[data-wallpaper-id=" + id + "]").find(".thumb-info").children(".wall-favs").eq(0).text()
+		// https://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
+		$(".lb-details").contents().filter(function(){ return this.nodeType == 3; })[0].nodeValue = favs;
 	}
 
 	var lightboxHasLinks = function() {
@@ -209,6 +237,7 @@ var wee = (function() {
 		if (prev.length)
 			return prev.children("figure[data-wallpaper-id]").eq(0);
 
+		// try the last image on the previous page
 		var prevPage = figure.parents(pageSelector).prev(pageSelector);
 
 		if (prevPage.length) {
@@ -228,6 +257,7 @@ var wee = (function() {
 		if (targetIndexes === undefined)
 			targetIndexes = [-2, -1, 1, 2];
 
+		// check previous 2 images
 		if (targetIndexes.indexOf(-1) !== -1 || targetIndexes.indexOf(-2) !== -1) {
 			var prev = previousThumbnail(figure);
 
@@ -242,6 +272,7 @@ var wee = (function() {
 			}
 		}
 
+		// next 2 images
 		if (targetIndexes.indexOf(1) !== -1 || targetIndexes.indexOf(2) !== -1) {
 			var next = nextThumbnail(figure);
 
@@ -301,6 +332,7 @@ var wee = (function() {
 				else if (event.data.oldIndex > event.data.newIndex)
 					neighbours = [-2];
 
+				// the slideshow will automatically preload the next image, so we have to ensure that the filetype is correct when it does
 				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, neighbours);
 			} else if (event.data.id == "lightbox_closed") {
 				lightboxOpen = false;
@@ -308,18 +340,22 @@ var wee = (function() {
 		}
 	});	
 
-	$(document).on('keyup.keyboard', function(event) {
-		if (lightboxOpen == false)
+	$(document).on("keyup.keyboard", function(event) {
+		if (lightboxOpen === false)
 			return;
 
 		// down arrow pressed, download the current image
 		if (event.keyCode == 40) {
-			$lightbox.find('.lb-details .wee-lb-download').eq(0)[0].click();
+			$lightbox.find(".lb-details .wee-lb-download").eq(0)[0].click();
 			event.preventDefault();
 			event.stopPropagation();
+		// up arrow, close the slideshow
+		} else if (event.keyCode == 38) {
+			$(".lb-close")[0].click();
 		}
 	});
 
+	// only some pages have the sidebar
 	if ($("#showcase-sidebar").length) {
 		addSidebarDownloadLink();	
 	}
@@ -330,6 +366,7 @@ var wee = (function() {
 		addPopoutLink: addPopoutLink,
 		validateFileType: validateFileType,
 		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
-		idFromUrl: idFromUrl
+		idFromUrl: idFromUrl,
+		tipsySettings: tipsySettings
 	}
 })();

@@ -48,7 +48,7 @@ var wee = (function() {
 		if (event.data.type == "from_inject") {
 			if (event.data.id == "page_added") {
 				// this has to be delayed until after the injected scripts have pushed our data into the dom
-				// if it is inside pageAdded the required data (i.e. the href attr) does not yet exist in the dom
+				// if it is inside pageAdded() the required data (i.e. the href attr) does not yet exist in the dom
 				if (lightbox.isOpen === true) {
 					// insert the newly loaded thumbnails into the lightbox
 					for (var i = 0; i < waitingPages.length; i++) {
@@ -70,7 +70,7 @@ var wee = (function() {
 		}
 	});
 
-
+	// page of thumbnails has been loaded into the current page
 	pageAdded = function(page) {
 		if (lightbox.isOpen === true)
 			waitingPages.push(page);
@@ -134,6 +134,7 @@ var wee = (function() {
 		var observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
 				if (mutation.type === "childList") {
+					// pages are loaded in as you scroll down the site
 					if (mutation.addedNodes.length > 0) {
 						for (var i = 0; i < mutation.addedNodes.length; i++) {
 							var node = $(mutation.addedNodes[i]);
@@ -144,6 +145,8 @@ var wee = (function() {
 						//console.log("added " + mutation.addedNodes.length + ": ", mutation.addedNodes);
 					}
 
+					// pages are removed (for performance) once too many are loaded in
+					// usually at this point a page (the earliest page, excluding page 1) is removed every time a new one is loaded on to the bottom
 					if (mutation.removedNodes.length > 0) {
 						for (var i = 0; i < mutation.removedNodes.length; i++) {
 							var node = $(mutation.removedNodes[i]);
