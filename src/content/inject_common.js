@@ -211,44 +211,32 @@ var wee = (function() {
 		return $lightbox.find('.lb-details .wee-lb-download').length > 0;
 	}
 
-	// get the next thumbnail on the page after the given one
 	var nextThumbnail = function(figure) {
-		var next = figure.parent().next("li");
-
-		if (next.length)
-			return next.children("figure[data-wallpaper-id]").eq(0);
-
-		// there is no image following this one, so check to see if there is another page
-		var nextPage = figure.parents(pageSelector).next(pageSelector);
-
-		if (nextPage.length) {
-			var nextListItem = nextPage.find("li").eq(0);
-
-			if (nextListItem.length)
-				return nextListItem.children("figure[data-wallpaper-id]").eq(0);
-		}
-
-		return undefined;
+		return adjacentThumbnail(figure, true);
 	}
 
 	var previousThumbnail = function(figure) {
-		var prev = figure.parent().prev("li");
+		return adjacentThumbnail(figure, false);
+	}
 
-		if (prev.length)
-			return prev.children("figure[data-wallpaper-id]").eq(0);
+	var adjacentThumbnail = function(figure, getNext) {
+		var adjacent = getNext ? figure.parent().next("li") : figure.parent().prev("li");
 
-		// try the last image on the previous page
-		var prevPage = figure.parents(pageSelector).prev(pageSelector);
+		if (adjacent.length)
+			return adjacent.children("figure[data-wallpaper-id]").eq(0);
 
-		if (prevPage.length) {
-			var prevListItem = prevPage.find("li").last();
+		// no image adjacent, check the adjacent page
+		var adjacentPage = getNext ? figure.parents(pageSelector).next(pageSelector) : figure.parents(pageSelector).prev(pageSelector);
 
-			if (prevListItem.length)
-				return prevListItem.children("figure[data-wallpaper-id]").eq(0);
+		if (adjacentPage.length) {
+			var adjacentListItem = getNext ? adjacentPage.find("li").eq(0) : adjacentPage.find("li").last();
+
+			if (adjacentListItem.length)
+				return adjacentListItem.children("figure[data-wallpaper-id]").eq(0);
 		}
 
 		return undefined;
-	}
+	}	
 
 	// forcibly validate the images on either side (up to 2 in both directions) of the given image
 	var validateSurroundingImages = function(figure, startIndex, targetIndexes) {
