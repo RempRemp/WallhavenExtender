@@ -29,7 +29,7 @@ var weeUtil = (function() {
 		return filename.substring(11).slice(0, -4);
 	}
 
-	swapFileType = function(url) {
+	var swapFileType = function(url) {
 		return url.slice(0, -3) + (url.substr(-3) === "jpg" ? "png" : "jpg");
 	}
 

@@ -1,6 +1,6 @@
 {
   "name": "Wallhaven Extender",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "manifest_version": 2,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
@@ -22,7 +22,8 @@
       ],
       "exclude_matches": [
         "*://alpha.wallhaven.cc/forums/*",
-        "*://wallhaven.cc/forums/*" 
+        "*://wallhaven.cc/forums/*",
+        "*://alpha.wallhaven.cc/settings/*"
       ],
       "css": [       
         "lib/lightbox2/lightbox.css",
@@ -41,6 +42,9 @@
         "*://alpha.wallhaven.cc/forums/*",
         "*://wallhaven.cc/forums/*"
       ],
+      "exclude_matches": [
+        "*://alpha.wallhaven.cc/settings/*"
+      ],
       "css": [
         "lib/lightbox2/lightbox.css",
         "src/content.css"
@@ -58,6 +62,7 @@
         "*://alpha.wallhaven.cc/settings/browsing/*"
       ],
       "js": [
+        "lib/jquery/jquery-2.1.4.min.js",
         "src/content_browsing.js"
       ]
     }
