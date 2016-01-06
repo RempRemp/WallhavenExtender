@@ -26,14 +26,14 @@
       ],
       "css": [       
         "lib/lightbox2/lightbox.css",
-        "src/content/content.css"
+        "src/content.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
-        "src/content/util.js",
-        "src/content/content_common.js",
-        "src/content/content.js"
+        "src/util.js",
+        "src/content_common.js",
+        "src/content.js"
       ]
     },
     {
@@ -43,14 +43,14 @@
       ],
       "css": [
         "lib/lightbox2/lightbox.css",
-        "src/content/content.css"
+        "src/content.css"
       ],
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
-        "src/content/util.js",
-        "src/content/content_common.js",
-        "src/content/forum/content_forum.js"
+        "src/util.js",
+        "src/content_common.js",
+        "src/forum/content_forum.js"
       ]
     },
     {
@@ -58,16 +58,16 @@
         "*://alpha.wallhaven.cc/settings/browsing/*"
       ],
       "js": [
-        "src/content/content_browsing.js"
+        "src/content_browsing.js"
       ]
     }
   ],
   "web_accessible_resources": [
-    "src/content/util.js",
-    "src/content/inject.js",
-    "src/content/forum/inject_forum.js",
-    "src/content/inject_common.js",
-    "src/content/inject_lightbox.js",
+    "src/util.js",
+    "src/inject.js",
+    "src/forum/inject_forum.js",
+    "src/inject_common.js",
+    "src/inject_lightbox.js",
     "lib/lightbox2/images/close.png",
     "lib/lightbox2/images/loading.gif",
     "lib/lightbox2/images/next.png",

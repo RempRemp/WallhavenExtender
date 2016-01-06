@@ -1,10 +1,9 @@
 var wee = (function() {
 	// basic download link on the rollover menu for each thumbnail
 	var addDownloadLink = function(figure) {
-		var thumbInfo = figure.find(".thumb-info").eq(0);
 		var wallID = figure.data("wallpaper-id");
 
-		thumbInfo.append($("<a class='wee-download-link wee-link'><i class='fa fa-fw fa-download'></i></a>")
+		figure.find(".thumb-info").append($("<a class='wee-download-link wee-link'><i class='fa fa-fw fa-download'></i></a>")
 			.prop({
 				href: weeUtil.buildWallpaperDirectUrl(wallID) + ".jpg",
 				//download: "wallhaven-" + wallID + ".jpg",
@@ -28,7 +27,7 @@ var wee = (function() {
 		var wallID = figure.data("wallpaper-id");
 		var lightboxTitle = "wee-image";
 
-		if (group == false)
+		if (!group)
 			lightboxTitle = "wee-image-" + wallID;
 
 		thumbInfo.append($("<a class='wee-popout-link wee-link'><i class='fa fa-fw fa-expand'></i></a>")

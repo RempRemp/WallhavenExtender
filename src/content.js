@@ -1,8 +1,8 @@
 $(document.body).append(
-	"<script src='" + chrome.extension.getURL("src/content/util.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/content/inject_common.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/content/inject_lightbox.js") + "'></script>"
+	"<script src='" + chrome.extension.getURL("src/util.js") + "'></script>" +
+	"<script src='" + chrome.extension.getURL("src/inject_common.js") + "'></script>" +
+	"<script src='" + chrome.extension.getURL("src/inject.js") + "'></script>" +
+	"<script src='" + chrome.extension.getURL("src/inject_lightbox.js") + "'></script>"
 );
 
 $(function() {
