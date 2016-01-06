@@ -6,23 +6,18 @@ var wee = (function() {
 		disableScrolling: true
 	});
 
-
 	var markAsSeenEnabled = false;
 
-	chrome.storage.sync.get("mark-as-seen", function(items) {
-		if (chrome.runtime.lastError) {
+	chrome.storage.local.get("mark-as-seen", function(items) {
+		if (chrome.runtime.lastError)
 			return;
-		}
 
 		// guests default to not saving seen wallpapers
-		if (!weeUtil.isLoggedIn) {
+		if (!weeUtil.isLoggedIn)
 			return;
-		}
 
 		// first time loading the extension, need to find out what this is set as in the user settings
 		if (items["mark-as-seen"] === undefined) {
-			console.log("not set");
-
 			$.ajax({
 				url: "http://alpha.wallhaven.cc/settings/browsing",
 				dataType: "html",
@@ -37,10 +32,10 @@ var wee = (function() {
 				},
 				complete: function(xhr, status) {
 					if (markAsSeenEnabled) {
-						chrome.storage.sync.set({"mark-as-seen": true})
+						chrome.storage.local.set({"mark-as-seen": true})
 						//console.log("settings -> mark true");
 					} else {
-						chrome.storage.sync.set({"mark-as-seen": false})
+						chrome.storage.local.set({"mark-as-seen": false})
 						//console.log("settings -> mark false");
 					}
 				}

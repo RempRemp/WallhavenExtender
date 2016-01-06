@@ -2,13 +2,11 @@
 // so update our local "mark as seen" data whenever this page is accessed
 (function() {
 	if ($("#mark_seen_wallpapers").prop("checked")) {
-		console.log("mark them as seen");
-		chrome.storage.sync.set({
+		chrome.storage.local.set({
 			"mark-as-seen": true
 		});
 	} else {
-		console.log("don't mark them as seen");
-		chrome.storage.sync.set({
+		chrome.storage.local.set({
 			"mark-as-seen": false
 		});
 	}
