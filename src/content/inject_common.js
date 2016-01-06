@@ -5,8 +5,6 @@ var wee = (function() {
 	if (!$(pageSelector).length)
 		pageSelector = ".thumb-listing";
 
-	var lightboxOpen = false;
-	var $lightbox = $("#lightbox");
 	var tipsySettings = {				
 		delayIn: 500,
 		delayOut: 500,
@@ -124,98 +122,12 @@ var wee = (function() {
 		return filename.substring(11).slice(0, -4);
 	}
 
-	// insert a download link into the lightbox description area
-	var insertLightboxLinks = function(url) {
-		if (lightboxHasLinks())
-			return;
-
-		var id = idFromUrl(url);
-		var figure = $("figure[data-wallpaper-id=" + id + "]");	
-
-		// add the "add to favorites"/"remove from favorites" button
-		var isFaved = figure.find(".thumb-btn-unfav").length > 0;
-		var favClass = isFaved ? "unfav" : "fav";
-		var favs = figure.find(".thumb-info").children(".wall-favs").eq(0).text();
-
-		var favButton = $("<a class='thumb-btn-" + favClass + " wee-lb-" + favClass + " wee-lb-desc'><i class='fa fa-fw fa-star'></i></a>")
-			.prop({
-				href: buildWallpaperDirectUrl(id) + ".jpg",
-				title: isFaved ? "Remove from favorites" : "Add to favorites"
-			})
-			.click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
-
-				// we can't really route to/replicate whatever js this button actually does behind the scenes,
-				// so just fake a click on the original "add to/remove from favorites" button
-				var _id = idFromUrl($(this).prop("href"));
-				var original = $("figure[data-wallpaper-id=" + _id + "]");
-
-				if (original.find(".thumb-btn-unfav").length > 0)
-					original.children(".thumb-btn-unfav")[0].click();
-				else
-					original.children(".thumb-btn-fav")[0].click();
-			})
-			.tipsy(tipsySettings)
-
-
-		$lightbox.find(".lb-details").prepend(favButton).prepend(favs)
-		// add the "view wallpaper" button that loads the wallpaper info page in a new tab
-		.prepend($("<a class='wee-lb-view wee-lb-desc'><i class='fa fa-fw fa-picture-o'></i></a>")
-			.prop({
-				href: buildWallpaperViewUrl(id),
-				title: "View Wallpaper",
-				target: "_blank"
-			})
-			.click(function(event) {
-				event.stopPropagation();
-			})
-			.tipsy(tipsySettings)
-		// add the "download" button
-		).prepend($("<a class='wee-lb-download wee-lb-desc'><i class='fa fa-fw fa-download'></i></a>")
-			.prop({
-				href: url,
-				//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
-				download: "",
-				title: "Download"
-			})
-			.click(function(event) {
-				event.stopPropagation();
-			})
-			.tipsy(tipsySettings)
-		);
-	}
-
-	// update the download link url every time the lightbox changes image (scrolls left/right, opens)
-	var updateLightboxLinks = function(url) {
-		if (!lightboxHasLinks())
-			return;
-
-		var id = idFromUrl(url);
-
-		$lightbox.find(".lb-details .wee-lb-download, .lb-details .wee-lb-fav, .lb-details .wee-lb-unfav").prop({
-			href: url,
-			//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
-		});
-
-		$lightbox.find(".lb-details .wee-lb-view").prop({
-			href: buildWallpaperViewUrl(id)
-		});
-
-		var favs = $("figure[data-wallpaper-id=" + id + "]").find(".thumb-info").children(".wall-favs").eq(0).text()
-		// https://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
-		$(".lb-details").contents().filter(function(){ return this.nodeType == 3; })[0].nodeValue = favs;
-	}
-
-	var lightboxHasLinks = function() {
-		return $lightbox.find('.lb-details .wee-lb-download').length > 0;
-	}
 
 	var nextThumbnail = function(figure) {
 		return adjacentThumbnail(figure, true);
 	}
 
-	var previousThumbnail = function(figure) {
+	var prevThumbnail = function(figure) {
 		return adjacentThumbnail(figure, false);
 	}
 
@@ -238,111 +150,6 @@ var wee = (function() {
 		return undefined;
 	}	
 
-	// forcibly validate the images on either side (up to 2 in both directions) of the given image
-	var validateSurroundingImages = function(figure, startIndex, targetIndexes) {
-		var surrounding = [];
-
-		if (targetIndexes === undefined)
-			targetIndexes = [-2, -1, 1, 2];
-
-		// check previous 2 images
-		if (targetIndexes.indexOf(-1) !== -1 || targetIndexes.indexOf(-2) !== -1) {
-			var prev = previousThumbnail(figure);
-
-			if (prev !== undefined) {
-				if (targetIndexes.indexOf(-1) !== -1)
-					surrounding.push({thumb: prev, index: startIndex - 1});
-
-				var prevButOne = previousThumbnail(prev);
-
-				if (prevButOne !== undefined && targetIndexes.indexOf(-2) !== -1)
-					surrounding.push({thumb: prevButOne, index: startIndex - 2});
-			}
-		}
-
-		// next 2 images
-		if (targetIndexes.indexOf(1) !== -1 || targetIndexes.indexOf(2) !== -1) {
-			var next = nextThumbnail(figure);
-
-			if (next !== undefined) {
-				if (targetIndexes.indexOf(1) !== -1)
-					surrounding.push({thumb: next, index: startIndex + 1});
-
-				var nextButOne = nextThumbnail(next);
-
-				if (nextButOne !== undefined && targetIndexes.indexOf(2) !== -1)
-					surrounding.push({thumb: nextButOne, index: startIndex + 2});
-			}
-		}
-
-		for (var i = 0; i < surrounding.length; i++) {
-			var a = surrounding[i].thumb.find("a[data-lightbox]")
-			// temp the index data in the dom because it will be lost in the closure
-			a.data("wee-validate-id", surrounding[i].index);
-
-			validateFileType(a, surrounding[i].thumb.data("wallpaper-id"), false, function(anchor, correctType) {
-				window.postMessage({ 
-					type: "from_inject", 
-					id: "lightbox_image_validated",
-					index: anchor.data("wee-validate-id"),
-					href: anchor.prop("href"),
-					correctType: correctType
-				}, "*");
-			});
-		}
-	}
-
-
-	window.addEventListener("message", function(event) {
-		if (event.source != window || event.type != "message" || event.data.type == "from_inject")
-			return;
-
-		if (event.data.type == "from_content") {
-			if (event.data.id == "lightbox_opened") {
-				lightboxOpen = true;
-
-				if (lightboxHasLinks())
-					updateLightboxLinks(event.data.href);
-				else
-					insertLightboxLinks(event.data.href);
-
-				// force validate the surrounding images so that they don't 404
-				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, [-2, -1, 1, 2]);
-			} else if (event.data.id == "lightbox_scrolled") {
-				updateLightboxLinks(event.data.href);
-
-				// only update the edges (e.g. [-2, -1, 0, 1, 2] - validate -2 and 2 but not the immediate neighbours)
-				// because the immediate neighbours would have been validated by the previous scroll (or the opening)
-				var neighbours = [];
-
-				if (event.data.newIndex > event.data.oldIndex)
-					neighbours = [2];
-				else if (event.data.oldIndex > event.data.newIndex)
-					neighbours = [-2];
-
-				// the slideshow will automatically preload the next image, so we have to ensure that the filetype is correct when it does
-				validateSurroundingImages($("figure[data-wallpaper-id='" + idFromUrl(event.data.href) + "']"), event.data.newIndex, neighbours);
-			} else if (event.data.id == "lightbox_closed") {
-				lightboxOpen = false;
-			}
-		}
-	});	
-
-	$(document).on("keyup.keyboard", function(event) {
-		if (lightboxOpen === false)
-			return;
-
-		// down arrow pressed, download the current image
-		if (event.keyCode == 40) {
-			$lightbox.find(".lb-details .wee-lb-download").eq(0)[0].click();
-			event.preventDefault();
-			event.stopPropagation();
-		// up arrow, close the slideshow
-		} else if (event.keyCode == 38) {
-			$(".lb-close")[0].click();
-		}
-	});
-
 	// only some pages have the sidebar
 	if ($("#showcase-sidebar").length) {
 		addSidebarDownloadLink();	
@@ -354,7 +161,10 @@ var wee = (function() {
 		addPopoutLink: addPopoutLink,
 		validateFileType: validateFileType,
 		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
+		buildWallpaperViewUrl: buildWallpaperViewUrl,
 		idFromUrl: idFromUrl,
+		nextThumbnail: nextThumbnail,
+		prevThumbnail: prevThumbnail,
 		tipsySettings: tipsySettings
 	}
 })();

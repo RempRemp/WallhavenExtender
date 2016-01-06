@@ -55,6 +55,7 @@
     "src/content/inject.js",
     "src/content/forum/inject_forum.js",
     "src/content/inject_common.js",
+    "src/content/inject_lightbox.js",
     "lib/lightbox2/images/close.png",
     "lib/lightbox2/images/loading.gif",
     "lib/lightbox2/images/next.png",

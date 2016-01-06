@@ -1,6 +1,7 @@
 $(document.body).append(
 	"<script src='" + chrome.extension.getURL("src/content/inject_common.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>"
+	"<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>" +
+	"<script src='" + chrome.extension.getURL("src/content/inject_lightbox.js") + "'></script>"
 );
 
 $(function() {
