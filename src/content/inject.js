@@ -1,6 +1,6 @@
 (function() {
 	var insertThumbnailLinks = function() {
-		$(wee.pageSelector).each(function(i) {
+		$(weeUtil.pageSelector).each(function(i) {
 			var $this = $(this);
 
 			// don't add the links to the same thumbnails more than once

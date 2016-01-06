@@ -1,17 +1,4 @@
 var wee = (function() {
-	// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61) so have a slightly different html structure
-	var pageSelector = ".thumb-listing-page";
-
-	if (!$(pageSelector).length)
-		pageSelector = ".thumb-listing";
-
-	var tipsySettings = {				
-		delayIn: 500,
-		delayOut: 500,
-		fade: true
-	}
-
-
 	// basic download link on the rollover menu for each thumbnail
 	var addDownloadLink = function(figure) {
 		var thumbInfo = figure.find(".thumb-info").eq(0);
@@ -19,7 +6,7 @@ var wee = (function() {
 
 		thumbInfo.append($("<a class='wee-download-link wee-link'><i class='fa fa-fw fa-download'></i></a>")
 			.prop({
-				href: buildWallpaperDirectUrl(wallID) + ".jpg",
+				href: weeUtil.buildWallpaperDirectUrl(wallID) + ".jpg",
 				//download: "wallhaven-" + wallID + ".jpg",
 				download: "",
 				title: "Download"
@@ -31,7 +18,7 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy(tipsySettings)
+			.tipsy(weeUtil.tipsySettings)
 		);
 	}
 
@@ -46,7 +33,7 @@ var wee = (function() {
 
 		thumbInfo.append($("<a class='wee-popout-link wee-link'><i class='fa fa-fw fa-expand'></i></a>")
 			.prop({
-				href: buildWallpaperDirectUrl(wallID) + ".jpg",
+				href: weeUtil.buildWallpaperDirectUrl(wallID) + ".jpg",
 				title: "Popout",
 			})
 			.attr({
@@ -60,7 +47,7 @@ var wee = (function() {
 					event.stopPropagation();
 				}
 			})
-			.tipsy(tipsySettings)
+			.tipsy(weeUtil.tipsySettings)
 		);
 	}
 
@@ -88,7 +75,7 @@ var wee = (function() {
 			},
 			error: function() {
 				// png
-				anchor.prop("href", buildWallpaperDirectUrl(id) + ".png");
+				anchor.prop("href", weeUtil.buildWallpaperDirectUrl(id) + ".png");
 			},
 			complete: function(xhr, status) {
 				anchor.data("wee-has-type", true);
@@ -107,22 +94,6 @@ var wee = (function() {
 		return false;
 	}
 
-	var buildWallpaperDirectUrl = function(id) {
-		return "http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
-	}
-
-	var buildWallpaperViewUrl = function(id) {
-		return "http://alpha.wallhaven.cc/wallpaper/" + id;
-	}
-
-	//http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-123456.jpg -> 123456
-	var idFromUrl = function(url) {
-		var filename = url.substring(url.lastIndexOf('/'));
-
-		return filename.substring(11).slice(0, -4);
-	}
-
-
 	var nextThumbnail = function(figure) {
 		return adjacentThumbnail(figure, true);
 	}
@@ -138,7 +109,7 @@ var wee = (function() {
 			return adjacent.children("figure[data-wallpaper-id]").eq(0);
 
 		// no image adjacent, check the adjacent page
-		var adjacentPage = getNext ? figure.parents(pageSelector).next(pageSelector) : figure.parents(pageSelector).prev(pageSelector);
+		var adjacentPage = getNext ? figure.parents(weeUtil.pageSelector).next(weeUtil.pageSelector) : figure.parents(weeUtil.pageSelector).prev(weeUtil.pageSelector);
 
 		if (adjacentPage.length) {
 			var adjacentListItem = getNext ? adjacentPage.find("li").eq(0) : adjacentPage.find("li").last();
@@ -156,15 +127,10 @@ var wee = (function() {
 	}
 
 	return {
-		pageSelector: pageSelector,
 		addDownloadLink: addDownloadLink,
 		addPopoutLink: addPopoutLink,
 		validateFileType: validateFileType,
-		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
-		buildWallpaperViewUrl: buildWallpaperViewUrl,
-		idFromUrl: idFromUrl,
 		nextThumbnail: nextThumbnail,
 		prevThumbnail: prevThumbnail,
-		tipsySettings: tipsySettings
 	}
 })();

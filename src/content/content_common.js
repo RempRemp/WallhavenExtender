@@ -1,10 +1,4 @@
 var wee = (function() {
-	// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61) so have a slightly different html structure
-	var pageSelector = ".thumb-listing-page";
-
-	if (!$(pageSelector).length)
-		pageSelector = ".thumb-listing";
-
 	var $lightbox = $("#lightbox");
 	var waitingPages = [];
 
@@ -20,10 +14,8 @@ var wee = (function() {
 			return;
 		}
 
-		var loggedIn = $("#userpanel.logged-in").length;
-
 		// guests default to not saving seen wallpapers
-		if (!loggedIn) {
+		if (!weeUtil.isLoggedIn) {
 			return;
 		}
 
@@ -170,13 +162,8 @@ var wee = (function() {
 		return -1;
 	}
 
-	swapFileType = function(url) {
-		return url.slice(0, -3) + (url.substr(-3) === "jpg" ? "png" : "jpg");
-	}
-
-
 	// watch for changes in the thumbnail page list (e.g. adding/removing pages)
-	var pageContainer = $(pageSelector).parent();
+	var pageContainer = $(weeUtil.pageSelector).parent();
 
 	if (pageContainer.length) {
 		var observer = new MutationObserver(function(mutations) {
@@ -220,6 +207,5 @@ var wee = (function() {
 	return {
 		$lightbox: $lightbox,
 		albumIndexOf: albumIndexOf,
-		swapFileType: swapFileType
 	}
 })();

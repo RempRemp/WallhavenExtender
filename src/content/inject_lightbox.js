@@ -7,7 +7,7 @@
 		if (lightboxHasLinks())
 			return;
 
-		var id = wee.idFromUrl(url);
+		var id = weeUtil.idFromUrl(url);
 		var figure = $("#thumb-" + id);	
 
 		// add the "add to favorites"/"remove from favorites" button
@@ -17,7 +17,7 @@
 
 		var favButton = $("<a class='thumb-btn-" + favClass + " wee-lb-" + favClass + " wee-lb-desc'><i class='fa fa-fw fa-star'></i></a>")
 			.prop({
-				href: wee.buildWallpaperDirectUrl(id) + ".jpg",
+				href: weeUtil.buildWallpaperDirectUrl(id) + ".jpg",
 				title: isFaved ? "Remove from favorites" : "Add to favorites"
 			})
 			.click(function(event) {
@@ -26,7 +26,7 @@
 
 				// we can't really route to/replicate whatever js this button actually does behind the scenes,
 				// so just fake a click on the original "add to/remove from favorites" button
-				var _id = wee.idFromUrl($(this).prop("href"));
+				var _id = weeUtil.idFromUrl($(this).prop("href"));
 				var original = $("#thumb-" + _id);
 
 				if (original.find(".thumb-btn-unfav").length > 0)
@@ -34,21 +34,21 @@
 				else
 					original.children(".thumb-btn-fav")[0].click();
 			})
-			.tipsy(wee.tipsySettings)
+			.tipsy(weeUtil.tipsySettings)
 
 
 		$lightbox.find(".lb-details").prepend(favButton).prepend(favs)
 		// add the "view wallpaper" button that loads the wallpaper info page in a new tab
 		.prepend($("<a class='wee-lb-view wee-lb-desc'><i class='fa fa-fw fa-picture-o'></i></a>")
 			.prop({
-				href: wee.buildWallpaperViewUrl(id),
+				href: weeUtil.buildWallpaperViewUrl(id),
 				title: "View Wallpaper",
 				target: "_blank"
 			})
 			.click(function(event) {
 				event.stopPropagation();
 			})
-			.tipsy(wee.tipsySettings)
+			.tipsy(weeUtil.tipsySettings)
 		// add the "download" button
 		).prepend($("<a class='wee-lb-download wee-lb-desc'><i class='fa fa-fw fa-download'></i></a>")
 			.prop({
@@ -60,7 +60,7 @@
 			.click(function(event) {
 				event.stopPropagation();
 			})
-			.tipsy(wee.tipsySettings)
+			.tipsy(weeUtil.tipsySettings)
 		);
 	}
 
@@ -69,7 +69,7 @@
 		if (!lightboxHasLinks())
 			return;
 
-		var id = wee.idFromUrl(url);
+		var id = weeUtil.idFromUrl(url);
 
 		$lightbox.find(".lb-details .wee-lb-download, .lb-details .wee-lb-fav, .lb-details .wee-lb-unfav").prop({
 			href: url,
@@ -77,7 +77,7 @@
 		});
 
 		$lightbox.find(".lb-details .wee-lb-view").prop({
-			href: wee.buildWallpaperViewUrl(id)
+			href: weeUtil.buildWallpaperViewUrl(id)
 		});
 
 		var favs = $("#thumb-" + id).find(".thumb-info").children(".wall-favs").eq(0).text()
@@ -144,7 +144,7 @@
 	}
 
 	// mark the given wallpaper id as "seen" in local storage
-	// this needs to be in an injected script so that it can access localStorage
+	// this needs to be in an injected script so that it can access addSortedUnique
 	var markAsSeen = function(id) {				
 		var seen = localStorage.getItem("wallhaven.seen-wallpapers");
 
@@ -176,10 +176,10 @@
 					insertLightboxLinks(event.data.href);
 
 				// force validate the surrounding images so that they don't 404
-				validateSurroundingImages($("#thumb-" + wee.idFromUrl(event.data.href)), event.data.newIndex, [-2, -1, 1, 2]);
+				validateSurroundingImages($("#thumb-" + weeUtil.idFromUrl(event.data.href)), event.data.newIndex, [-2, -1, 1, 2]);
 
 				if (event.data.markSeen)	
-					markAsSeen(wee.idFromUrl(event.data.href));
+					markAsSeen(weeUtil.idFromUrl(event.data.href));
 			} else if (event.data.id == "lightbox_scrolled") {
 				updateLightboxLinks(event.data.href);
 
@@ -193,10 +193,10 @@
 					neighbours = [-2];
 
 				// the slideshow will automatically preload the next image, so we have to ensure that the filetype is correct when it does
-				validateSurroundingImages($("#thumb-" + wee.idFromUrl(event.data.href)), event.data.newIndex, neighbours);
+				validateSurroundingImages($("#thumb-" + weeUtil.idFromUrl(event.data.href)), event.data.newIndex, neighbours);
 
 				if (event.data.markSeen)	
-					markAsSeen(wee.idFromUrl(event.data.href));
+					markAsSeen(weeUtil.idFromUrl(event.data.href));
 			} else if (event.data.id == "lightbox_closed") {
 				lightboxOpen = false;
 			}
@@ -224,7 +224,7 @@
 		if (lightboxOpen === false || scrollIgnored === true)
 			return;
 
-		var arrowElement = event.originalEvent.deltaY > 0 ? $("a.lb-prev") : $("a.lb-next");
+		var arrowElement = event.originalEvent.deltaY > 0 ? $("a.lb-next") : $("a.lb-prev");
 
 		// should probably export a proper function from the slideshow to go left/right
 		if (arrowElement.css("display") !== "none") {

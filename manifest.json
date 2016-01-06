@@ -31,6 +31,7 @@
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
+        "src/content/util.js",
         "src/content/content_common.js",
         "src/content/content.js"
       ]
@@ -47,6 +48,7 @@
       "js": [
         "lib/jquery/jquery-2.1.4.min.js",
         "lib/lightbox2/lightbox.js",
+        "src/content/util.js",
         "src/content/content_common.js",
         "src/content/forum/content_forum.js"
       ]
@@ -61,6 +63,7 @@
     }
   ],
   "web_accessible_resources": [
+    "src/content/util.js",
     "src/content/inject.js",
     "src/content/forum/inject_forum.js",
     "src/content/inject_common.js",

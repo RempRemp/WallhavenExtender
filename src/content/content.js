@@ -1,4 +1,5 @@
 $(document.body).append(
+	"<script src='" + chrome.extension.getURL("src/content/util.js") + "'></script>" +
 	"<script src='" + chrome.extension.getURL("src/content/inject_common.js") + "'></script>" +
 	"<script src='" + chrome.extension.getURL("src/content/inject.js") + "'></script>" +
 	"<script src='" + chrome.extension.getURL("src/content/inject_lightbox.js") + "'></script>"
@@ -30,7 +31,7 @@ $(function() {
 		var image = $("a[data-lightbox='wee-image'][href='" + data.href + "']").eq(0).parents("figure.thumb");
 
 		if (!image.length)
-			image = $("a[data-lightbox='wee-image'][href='" + wee.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
+			image = $("a[data-lightbox='wee-image'][href='" + weeUtil.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
 
 		// save the current scroll offset
 		scrollOffset = $(window).scrollTop() - image.offset().top;				
@@ -40,7 +41,7 @@ $(function() {
 		var image = $("a[data-lightbox='wee-image'][href='" + data.href + "']").eq(0).parents("figure.thumb");
 
 		if (!image.length)
-			image = $("a[data-lightbox='wee-image'][href='" + wee.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
+			image = $("a[data-lightbox='wee-image'][href='" + weeUtil.swapFileType(data.href) + "']").eq(0).parents("figure.thumb");
 
 		if (!image.length) {
 			console.log("lightbox scroll cannot find image " + data.href);
