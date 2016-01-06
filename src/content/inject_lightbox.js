@@ -2,7 +2,7 @@
 	var $lightbox = $("#lightbox");
 	var lightboxOpen = false;
 
-		// insert a download link into the lightbox description area
+	// insert a download link into the lightbox description area
 	var insertLightboxLinks = function(url) {
 		if (lightboxHasLinks())
 			return;
@@ -89,7 +89,6 @@
 		return $lightbox.find('.lb-details .wee-lb-download').length > 0;
 	}
 
-
 	// forcibly validate the images on either side (up to 2 in both directions) of the given image
 	var validateSurroundingImages = function(figure, startIndex, targetIndexes) {
 		var surrounding = [];
@@ -144,18 +143,18 @@
 		}
 	}
 
+	// mark the given wallpaper id as "seen" in local storage
+	// this needs to be in an injected script so that it can access localStorage
 	var markAsSeen = function(id) {				
 		var seen = localStorage.getItem("wallhaven.seen-wallpapers");
 
-		if (seen === null)
-			seen = [];
-		else
-			seen = JSON.parse(seen);
+		seen = !seen ? [] : JSON.parse(seen);
 
 		var len = seen.length;
 
 		seen.addSortedUnique(new Number(id));
 
+		// don't bother saving if we didn't add anything
 		if (seen.length > len) {
 			localStorage.setItem("wallhaven.seen-wallpapers", JSON.stringify(seen));
 			$("#thumb-" + id).addClass("thumb-seen");
@@ -179,7 +178,8 @@
 				// force validate the surrounding images so that they don't 404
 				validateSurroundingImages($("#thumb-" + wee.idFromUrl(event.data.href)), event.data.newIndex, [-2, -1, 1, 2]);
 
-				markAsSeen(wee.idFromUrl(event.data.href));
+				if (event.data.markSeen)	
+					markAsSeen(wee.idFromUrl(event.data.href));
 			} else if (event.data.id == "lightbox_scrolled") {
 				updateLightboxLinks(event.data.href);
 
@@ -195,7 +195,8 @@
 				// the slideshow will automatically preload the next image, so we have to ensure that the filetype is correct when it does
 				validateSurroundingImages($("#thumb-" + wee.idFromUrl(event.data.href)), event.data.newIndex, neighbours);
 
-				markAsSeen(wee.idFromUrl(event.data.href));
+				if (event.data.markSeen)	
+					markAsSeen(wee.idFromUrl(event.data.href));
 			} else if (event.data.id == "lightbox_closed") {
 				lightboxOpen = false;
 			}
@@ -217,5 +218,20 @@
 		}
 	});
 
+	var scrollIgnored = false;
 
+	$(window).on("wheel", function(event) {
+		if (lightboxOpen === false || scrollIgnored === true)
+			return;
+
+		var arrowElement = event.originalEvent.deltaY > 0 ? $("a.lb-prev") : $("a.lb-next");
+
+		// should probably export a proper function from the slideshow to go left/right
+		if (arrowElement.css("display") !== "none") {
+			scrollIgnored = true;
+			arrowElement[0].click();
+			// don't let lots of simultaneous wheel events through
+			setTimeout(function() { scrollIgnored = false; }, 200);
+		}
+	});
 })();

@@ -11,7 +11,8 @@
   "permissions": [
     "*://alpha.wallhaven.cc/*",
     "*://wallhaven.cc/*",
-    "downloads"
+    "downloads",
+    "storage"
   ],
   "content_scripts": [
     {
@@ -48,6 +49,14 @@
         "lib/lightbox2/lightbox.js",
         "src/content/content_common.js",
         "src/content/forum/content_forum.js"
+      ]
+    },
+    {
+      "matches": [
+        "*://alpha.wallhaven.cc/settings/browsing/*"
+      ],
+      "js": [
+        "src/content/content_browsing.js"
       ]
     }
   ],

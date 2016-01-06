@@ -8,19 +8,64 @@ var wee = (function() {
 	var $lightbox = $("#lightbox");
 	var waitingPages = [];
 
-
 	lightbox.option({
 		disableScrolling: true
 	});
 
-	
+
+	var markAsSeenEnabled = false;
+
+	chrome.storage.sync.get("mark-as-seen", function(items) {
+		if (chrome.runtime.lastError) {
+			return;
+		}
+
+		var loggedIn = $("#userpanel.logged-in").length;
+
+		// guests default to not saving seen wallpapers
+		if (!loggedIn) {
+			return;
+		}
+
+		// first time loading the extension, need to find out what this is set as in the user settings
+		if (items["mark-as-seen"] === undefined) {
+			console.log("not set");
+
+			$.ajax({
+				url: "http://alpha.wallhaven.cc/settings/browsing",
+				dataType: "html",
+				success: function(data, status, xhr) {
+					var page = $.parseHTML(data);
+
+					if ($(page).find("#mark_seen_wallpapers").prop("checked"))
+						markAsSeenEnabled = true;
+				},
+				error: function(xhr, status, error) {
+					//console.log("error " + status);
+				},
+				complete: function(xhr, status) {
+					if (markAsSeenEnabled) {
+						chrome.storage.sync.set({"mark-as-seen": true})
+						//console.log("settings -> mark true");
+					} else {
+						chrome.storage.sync.set({"mark-as-seen": false})
+						//console.log("settings -> mark false");
+					}
+				}
+			});
+		} else {
+			markAsSeenEnabled = items["mark-as-seen"];
+		}
+	});
+
 	$lightbox.on("scrolled.lightbox", function(event, newIndex, oldIndex) {
 		if (oldIndex === undefined) {
 			window.postMessage({ 
 				type: "from_content", 
 				id: "lightbox_opened",
 				newIndex: newIndex,
-				href: lightbox.album[newIndex].link
+				href: lightbox.album[newIndex].link,
+				markSeen: markAsSeenEnabled
 			}, "*");
 		} else {
 			window.postMessage({ 
@@ -28,7 +73,8 @@ var wee = (function() {
 				id: "lightbox_scrolled",
 				newIndex: newIndex,
 				oldIndex: oldIndex,
-				href: lightbox.album[newIndex].link
+				href: lightbox.album[newIndex].link,
+				markSeen: markAsSeenEnabled
 			}, "*");
 		}
 	}).on("closed.lightbox", function(event, currentIndex) {
