@@ -40,6 +40,7 @@ var weeUtil = (function() {
 		isLoggedIn: loggedIn,
 		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
 		buildWallpaperViewUrl: buildWallpaperViewUrl,
-		idFromUrl: idFromUrl
+		idFromUrl: idFromUrl,
+		swapFileType: swapFileType
 	}
 })();
