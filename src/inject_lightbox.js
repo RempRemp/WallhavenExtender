@@ -215,6 +215,20 @@
 		// up arrow, close the slideshow
 		} else if (event.keyCode == 38) {
 			$(".lb-close")[0].click();
+		// f, favourites the wallpaper
+		} else if (event.keyCode == 70) {
+			var fav = $lightbox.find(".lb-details .wee-lb-fav");
+
+			if (!fav.length)
+				fav = $lightbox.find(".lb-details .wee-lb-unfav");
+
+			if (!fav.length)
+				return;
+			
+			fav.eq(0)[0].click();
+
+			event.preventDefault();
+			event.stopPropagation();
 		}
 	});
 
