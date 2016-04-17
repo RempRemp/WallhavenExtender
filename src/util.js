@@ -1,3 +1,6 @@
+// this is loaded into every page (content and injected)
+// serves as a global utility source
+
 var weeUtil = (function() {
 	// some pages don't show the thumbs as pages (e.g. http://alpha.wallhaven.cc/tag/61) so have a slightly different html structure
 	var pageSelector = ".thumb-listing-page";
@@ -12,14 +15,18 @@ var weeUtil = (function() {
 	}
 
 	var loggedIn = $("#userpanel.logged-in").length;
+	var secure = document.location.protocol === "https:";
 
 
-	var buildWallpaperDirectUrl = function(id) {
-		return "http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
+	var buildWallpaperDirectUrl = function(id, alpha) {
+		if (alpha) 
+			return (secure ? "https" : "http") + "://alpha.wallhaven.cc/wallpapers/full/wallhaven-" + id;
+
+		return (secure ? "https" : "http") + "://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
 	}
 
 	var buildWallpaperViewUrl = function(id) {
-		return "http://alpha.wallhaven.cc/wallpaper/" + id;
+		return (secure ? "https" : "http") + "://alpha.wallhaven.cc/wallpaper/" + id;
 	}
 
 	//http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-123456.jpg -> 123456
@@ -38,6 +45,7 @@ var weeUtil = (function() {
 		pageSelector: pageSelector,
 		tipsySettings: tipsySettings,
 		isLoggedIn: loggedIn,
+		isSecure: secure,
 		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
 		buildWallpaperViewUrl: buildWallpaperViewUrl,
 		idFromUrl: idFromUrl,

@@ -19,7 +19,7 @@ var wee = (function() {
 		// first time loading the extension, need to find out what this is set as in the user settings
 		if (items["mark-as-seen"] === undefined) {
 			$.ajax({
-				url: "http://alpha.wallhaven.cc/settings/browsing",
+				url: (weeUtil.isSecure ? "https" : "http") + "://alpha.wallhaven.cc/settings/browsing",
 				dataType: "html",
 				success: function(data, status, xhr) {
 					var page = $.parseHTML(data);

@@ -53,7 +53,8 @@ var wee = (function() {
 	// add a download link to the sidebar on the image info page (e.g. the one reached by clicking a thumbnail)
 	var addSidebarDownloadLink = function() {
 		var wall = $("#wallpaper[data-wallpaper-id]").eq(0);
-		var listItem = $("<li><a href='http:" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
+		var protocol = weeUtil.isSecure ? "https" : "http";
+		var listItem = $("<li><a href='" + protocol + ":" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
 
 		$("#showcase-sidebar").find(".showcase-tools").append(listItem);
 	}
@@ -68,7 +69,7 @@ var wee = (function() {
 		$.ajax({
 			method: "HEAD",
 			// use alpha. instead of wallpapers. to avoid any cross-origin business
-			url: "http://alpha.wallhaven.cc/wallpapers/full/wallhaven-" + id + ".jpg",
+			url: weeUtil.buildWallpaperDirectUrl(id, true) + ".jpg",
 			success: function() {
 				// jpg
 			},
