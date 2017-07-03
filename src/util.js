@@ -40,6 +40,10 @@ var weeUtil = (function() {
 		return url.slice(0, -3) + (url.substr(-3) === "jpg" ? "png" : "jpg");
 	}
 
+	var getFigure = function(id) {
+		return $(".thumb[data-wallpaper-id=" + id + "]");
+	}
+
 
 	return {
 		pageSelector: pageSelector,
@@ -49,6 +53,7 @@ var weeUtil = (function() {
 		buildWallpaperDirectUrl: buildWallpaperDirectUrl,
 		buildWallpaperViewUrl: buildWallpaperViewUrl,
 		idFromUrl: idFromUrl,
-		swapFileType: swapFileType
+		swapFileType: swapFileType,
+		getFigure: getFigure
 	}
 })();

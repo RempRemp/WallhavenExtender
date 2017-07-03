@@ -8,7 +8,7 @@
 			return;
 
 		var id = weeUtil.idFromUrl(url);
-		var figure = $("#thumb-" + id);	
+		var figure = weeUtil.getFigure(id);
 
 		// add the "add to favorites"/"remove from favorites" button
 		var isFaved = figure.find(".thumb-btn-unfav").length > 0;
@@ -27,7 +27,7 @@
 				// we can't really route to/replicate whatever js this button actually does behind the scenes,
 				// so just fake a click on the original "add to/remove from favorites" button
 				var _id = weeUtil.idFromUrl($(this).prop("href"));
-				var original = $("#thumb-" + _id);
+				var original = weeUtil.getFigure(_id);
 
 				if (original.find(".thumb-btn-unfav").length > 0)
 					original.children(".thumb-btn-unfav")[0].click();
@@ -70,6 +70,7 @@
 			return;
 
 		var id = weeUtil.idFromUrl(url);
+		var figure = weeUtil.getFigure(id);
 
 		$lightbox.find(".lb-details .wee-lb-download, .lb-details .wee-lb-fav, .lb-details .wee-lb-unfav").prop({
 			href: url,
@@ -80,9 +81,13 @@
 			href: weeUtil.buildWallpaperViewUrl(id)
 		});
 
-		var favs = $("#thumb-" + id).find(".thumb-info").children(".wall-favs").eq(0).text()
+		var favs = figure.find(".thumb-info").children(".wall-favs").eq(0).text()
 		// https://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
-		$(".lb-details").contents().filter(function(){ return this.nodeType == 3; })[0].nodeValue = favs;
+		var favsText = $(".lb-details").contents().filter(function(){ return this.nodeType == 3; });
+
+		if (favsText.length) {
+			favsText[0].nodeValue = favs;
+		}
 	}
 
 	var lightboxHasLinks = function() {
@@ -157,7 +162,7 @@
 		// don't bother saving if we didn't add anything
 		if (seen.length > len) {
 			localStorage.setItem("wallhaven.seen-wallpapers", JSON.stringify(seen));
-			$("#thumb-" + id).addClass("thumb-seen");
+			weeUtil.getFigure(id).addClass("thumb-seen");
 		}		
 	}
 
@@ -176,7 +181,7 @@
 					insertLightboxLinks(event.data.href);
 
 				// force validate the surrounding images so that they don't 404
-				validateSurroundingImages($("#thumb-" + weeUtil.idFromUrl(event.data.href)), event.data.newIndex, [-2, -1, 1, 2]);
+				validateSurroundingImages(weeUtil.getFigure(weeUtil.idFromUrl(event.data.href)), event.data.newIndex, [-2, -1, 1, 2]);
 
 				if (event.data.markSeen)	
 					markAsSeen(weeUtil.idFromUrl(event.data.href));
@@ -193,7 +198,7 @@
 					neighbours = [-2];
 
 				// the slideshow will automatically preload the next image, so we have to ensure that the filetype is correct when it does
-				validateSurroundingImages($("#thumb-" + weeUtil.idFromUrl(event.data.href)), event.data.newIndex, neighbours);
+				validateSurroundingImages(weeUtil.getFigure(weeUtil.idFromUrl(event.data.href)), event.data.newIndex, neighbours);
 
 				if (event.data.markSeen)	
 					markAsSeen(weeUtil.idFromUrl(event.data.href));
