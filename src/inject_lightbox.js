@@ -149,23 +149,54 @@
 	}
 
 	// mark the given wallpaper id as "seen" in local storage
-	// this needs to be in an injected script so that it can access addSortedUnique
-	var markAsSeen = function(id) {				
+	var markAsSeen = function(id) {		
+		id = Number(id);	
 		var seen = localStorage.getItem("wallhaven.seen-wallpapers");
 
 		seen = !seen ? [] : JSON.parse(seen);
 
-		var len = seen.length;
+		var result = binarySearch(seen, id);
 
-		seen.addSortedUnique(new Number(id));
+		// already exists, don't need to save
+		if (result.length === 1) {
+			return;
+		}
 
-		// don't bother saving if we didn't add anything
-		if (seen.length > len) {
-			localStorage.setItem("wallhaven.seen-wallpapers", JSON.stringify(seen));
-			weeUtil.getFigure(id).addClass("thumb-seen");
-		}		
+		seen.splice(result[1], 0, id);
+
+		localStorage.setItem("wallhaven.seen-wallpapers", JSON.stringify(seen));
+		weeUtil.getFigure(id).addClass("thumb-seen");	
 	}
 
+	//https://github.com/Olical/binary-search/blob/master/src/binarySearch.js
+	function binarySearch(list, item) {
+	    var min = 0;
+	    var max = list.length - 1;
+	    var guess;
+
+		var bitwise = (max <= 2147483647) ? true : false;
+		if (bitwise) {
+			while (min <= max) {
+				guess = (min + max) >> 1;
+				if (list[guess] === item) { return [guess]; }
+				else {
+					if (list[guess] < item) { min = guess + 1; }
+					else { max = guess - 1; }
+				}
+			}
+		} else {
+			while (min <= max) {
+				guess = Math.floor((min + max) / 2);
+				if (list[guess] === item) { return [guess]; }
+				else {
+					if (list[guess] < item) { min = guess + 1; }
+					else { max = guess - 1; }
+				}
+			}
+		}
+
+	    return [undefined, min];
+	}
 
 	window.addEventListener("message", function(event) {
 		if (event.source != window || event.type != "message" || event.data.type == "from_inject")
