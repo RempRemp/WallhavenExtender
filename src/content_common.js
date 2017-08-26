@@ -19,7 +19,7 @@ var wee = (function() {
 		// first time loading the extension, need to find out what this is set as in the user settings
 		if (items["mark-as-seen"] === undefined) {
 			$.ajax({
-				url: (weeUtil.isSecure ? "https" : "http") + "://alpha.wallhaven.cc/settings/browsing",
+				url: weeUtil.getProtocol() + "://alpha.wallhaven.cc/settings/browsing",
 				dataType: "html",
 				success: function(data, status, xhr) {
 					var page = $.parseHTML(data);
@@ -197,6 +197,43 @@ var wee = (function() {
 			characterData: false, 
 			subtree: false 
 		});
+	}
+
+	similarOverlayCreated = function(div) {
+		window.postMessage({ 
+			type: "from_content", 
+			id: "similar_overlay_created"
+		}, "*");
+	}
+
+	if ($("#showcase-sidebar").length) {
+		var searchSimilar = $(".link[href^='" + weeUtil.getProtocol() + "://alpha.wallhaven.cc/wallpaper/similar/'");
+		var overlayInner = $("section.overlay-inner");
+
+		// don't strictly need to check both (one implies the other), but let's do it anyway
+		if (searchSimilar.length && overlayInner.length) {
+			var observer = new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					if (mutation.type === "childList") {
+						if (mutation.addedNodes.length > 0) {
+							for (var i = 0; i < mutation.addedNodes.length; i++) {
+								var node = $(mutation.addedNodes[i]);
+
+								if (node.hasClass("overlay-content"))
+									similarOverlayCreated(node);
+							}
+						}
+					}
+				});    
+			});
+
+			observer.observe(overlayInner[0], { 
+				childList: true, 
+				attributes: false, 
+				characterData: false, 
+				subtree: false 
+			});				
+		}
 	}
 
 	return {

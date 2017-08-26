@@ -19,7 +19,7 @@ body.lb-disable-scrolling {
 	position: absolute;
 	top: 0;
 	left: 0;
-	z-index: 998;
+	z-index: 1009;
 	background-color: #000;
 	filter: alpha(Opacity=80);
 	opacity: .8;
@@ -29,7 +29,7 @@ body.lb-disable-scrolling {
 	position: absolute;
 	left: 0;
 	width: 100%;
-	z-index: 999;
+	z-index: 1010;
 	font-weight: 400
 }
 .lightbox .lb-image {

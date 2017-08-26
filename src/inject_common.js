@@ -53,8 +53,7 @@ var wee = (function() {
 	// add a download link to the sidebar on the image info page (e.g. the one reached by clicking a thumbnail)
 	var addSidebarDownloadLink = function() {
 		var wall = $("#wallpaper[data-wallpaper-id]").eq(0);
-		var protocol = weeUtil.isSecure ? "https" : "http";
-		var listItem = $("<li><a href='" + protocol + ":" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
+		var listItem = $("<li><a href='" + weeUtil.getProtocol() + ":" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
 
 		$("#showcase-sidebar").find(".showcase-tools").append(listItem);
 	}

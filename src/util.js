@@ -17,16 +17,19 @@ var weeUtil = (function() {
 	var loggedIn = $("#userpanel.logged-in").length;
 	var secure = document.location.protocol === "https:";
 
+	var getProtocol = function() {
+		return secure ? "https" : "http";
+	}
 
 	var buildWallpaperDirectUrl = function(id, alpha) {
 		if (alpha) 
-			return (secure ? "https" : "http") + "://alpha.wallhaven.cc/wallpapers/full/wallhaven-" + id;
+			return getProtocol() + "://alpha.wallhaven.cc/wallpapers/full/wallhaven-" + id;
 
-		return (secure ? "https" : "http") + "://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
+		return getProtocol() + "://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-" + id;
 	}
 
 	var buildWallpaperViewUrl = function(id) {
-		return (secure ? "https" : "http") + "://alpha.wallhaven.cc/wallpaper/" + id;
+		return getProtocol() + "://alpha.wallhaven.cc/wallpaper/" + id;
 	}
 
 	//http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-123456.jpg -> 123456
@@ -54,6 +57,7 @@ var weeUtil = (function() {
 		buildWallpaperViewUrl: buildWallpaperViewUrl,
 		idFromUrl: idFromUrl,
 		swapFileType: swapFileType,
-		getFigure: getFigure
+		getFigure: getFigure,
+		getProtocol: getProtocol
 	}
 })();
