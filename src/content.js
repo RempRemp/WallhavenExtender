@@ -1,9 +1,33 @@
-$(document.body).append(
-	"<script src='" + chrome.extension.getURL("src/util.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/inject_common.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/inject.js") + "'></script>" +
-	"<script src='" + chrome.extension.getURL("src/inject_lightbox.js") + "'></script>"
-);
+// $(document.body).append(
+// 	"<script src='" + chrome.extension.getURL("src/util.js") + "'></script>" +
+// 	"<script src='" + chrome.extension.getURL("src/inject_common.js") + "'></script>" +
+// 	"<script src='" + chrome.extension.getURL("src/inject.js") + "'></script>" +
+// 	"<script src='" + chrome.extension.getURL("src/inject_lightbox.js") + "'></script>"
+// );
+
+(function() {
+	var injectScript = function(path) {
+		var script = document.createElement("script");
+		script.src = chrome.extension.getURL(path);
+		// wait for everything to load before we start doing things in our injected scripts
+		// otherwise they can load out of order and error when trying to call other parts that don't yet exist
+		script.onload = function() { 
+			window.weeLoadCount = (window.weeLoadCount || 0) + 1; 
+			if (window.weeLoadCount === 4) { 
+				window.postMessage({ 
+					type: "from_content", 
+					id: "inject_loaded"
+				}, "*");
+			}
+		}
+		document.body.appendChild(script);	
+	}
+
+	injectScript("src/util.js");
+	injectScript("src/inject_common.js");
+	injectScript("src/inject.js");
+	injectScript("src/inject_lightbox.js");
+})();
 
 $(function() {
 	var $body = $("body");
@@ -17,6 +41,11 @@ $(function() {
 		if (event.data.type == "from_inject") {
 			if (event.data.id == "lightbox_image_validated") {
 				lightboxImageValidated(event.data);
+			} else if (event.data.id === "download_image") {
+				chrome.runtime.sendMessage({
+					id: "download_image", 
+					url: weeUtil.buildWallpaperDirectUrl(event.data.wallId) + "." + (event.data.extension === "png" ? "png" : "jpg")
+				});
 			}
 		} else if (event.data.type == "from_content") {
 			if (event.data.id == "lightbox_opened") {

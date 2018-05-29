@@ -54,11 +54,26 @@
 			.prop({
 				href: url,
 				//download: "wallhaven-" + wee.idFromUrl(url) + ".jpg",
-				download: "",
+				//download: "",
 				title: "Download"
 			})
 			.click(function(event) {
+				event.preventDefault();
 				event.stopPropagation();
+
+				var wallId = weeUtil.idFromUrl(this.href);
+				
+				// stop the click if we need to validate the file type
+				if (!wee.validateFileType($(this), wallId, true)) {
+					return;
+				}
+
+				window.postMessage({ 
+					type: "from_inject", 
+					id: "download_image",
+					wallId: wallId,
+					extension: this.dataset.extension
+				}, "*");
 			})
 			.tipsy(weeUtil.tipsySettings)
 		);

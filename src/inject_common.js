@@ -7,15 +7,26 @@ var wee = (function() {
 			.prop({
 				href: weeUtil.buildWallpaperDirectUrl(wallID) + ".jpg",
 				//download: "wallhaven-" + wallID + ".jpg",
-				download: "",
 				title: "Download"
 			})
+			.attr({
+				"data-extension": "jpg"
+			})
 			.click(function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
 				// stop the click if we need to validate the file type
 				if (!validateFileType($(this), wallID, true)) {
-					event.preventDefault();
-					event.stopPropagation();
+					return;
 				}
+
+				window.postMessage({ 
+					type: "from_inject", 
+					id: "download_image",
+					wallId: wallID,
+					extension: this.dataset.extension
+				}, "*");
 			})
 			.tipsy(weeUtil.tipsySettings)
 		);
@@ -37,13 +48,15 @@ var wee = (function() {
 			})
 			.attr({
 				"data-lightbox": lightboxTitle,
-				"data-title": thumbInfo.children(".wall-res").eq(0).text()
+				"data-title": thumbInfo.children(".wall-res").eq(0).text(),
+				"data-extension": "jpg"
 			})
 			.click(function(event) {
 				// if we need to validate the file type then block the click event
 				if (!validateFileType($(this), wallID, true)) {
 					event.preventDefault();
 					event.stopPropagation();
+					return;
 				}
 			})
 			.tipsy(weeUtil.tipsySettings)
@@ -53,7 +66,23 @@ var wee = (function() {
 	// add a download link to the sidebar on the image info page (e.g. the one reached by clicking a thumbnail)
 	var addSidebarDownloadLink = function() {
 		var wall = $("#wallpaper[data-wallpaper-id]").eq(0);
-		var listItem = $("<li><a href='" + weeUtil.getProtocol() + ":" + wall.attr("src") + "' download><i class='fa fa-fw fa-download'></i> Download</a></li>");
+		var anchor = $("<a href='" + weeUtil.getProtocol() + ":" + wall.attr("src") + "'><i class='fa fa-fw fa-download'></i> Download</a>")
+		anchor.attr("data-extension", wall.attr("src").endsWith("png") ? "png" : "jpg")
+			.click(function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				window.postMessage({ 
+					type: "from_inject", 
+					id: "download_image",
+					wallId: wall.get(0).dataset.wallpaperId,
+					extension: this.dataset.extension
+				}, "*");
+			})
+
+		var listItem = $("<li></li>");
+
+		listItem.append(anchor);
 
 		$("#showcase-sidebar").find(".showcase-tools").append(listItem);
 	}
@@ -75,6 +104,7 @@ var wee = (function() {
 			error: function() {
 				// png
 				anchor.prop("href", weeUtil.buildWallpaperDirectUrl(id) + ".png");
+				anchor.attr("data-extension", "png");
 			},
 			complete: function(xhr, status) {
 				anchor.data("wee-has-type", true);
@@ -120,16 +150,29 @@ var wee = (function() {
 		return undefined;
 	}	
 
-	// only some pages have the sidebar
-	if ($("#showcase-sidebar").length) {
-		addSidebarDownloadLink();	
+	var onLoad = function() {
+		// only some pages have the sidebar
+		if ($("#showcase-sidebar").length) {
+			addSidebarDownloadLink();	
+		}
 	}
+
+	window.addEventListener("message", function(event) {
+		if (event.source != window || event.type != "message")
+			return;
+
+		if (event.data.type == "from_content") {
+			if (event.data.id == "inject_loaded") {
+				onLoad();
+			}
+		}
+	});
 
 	return {
 		addDownloadLink: addDownloadLink,
 		addPopoutLink: addPopoutLink,
 		validateFileType: validateFileType,
 		nextThumbnail: nextThumbnail,
-		prevThumbnail: prevThumbnail,
+		prevThumbnail: prevThumbnail
 	}
 })();

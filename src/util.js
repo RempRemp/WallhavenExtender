@@ -47,7 +47,6 @@ var weeUtil = (function() {
 		return $(".thumb[data-wallpaper-id=" + id + "]");
 	}
 
-
 	return {
 		pageSelector: pageSelector,
 		tipsySettings: tipsySettings,

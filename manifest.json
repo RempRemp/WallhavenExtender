@@ -77,5 +77,11 @@
     "lib/lightbox2/images/loading.gif",
     "lib/lightbox2/images/next.png",
     "lib/lightbox2/images/prev.png"
-  ]
+  ],
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ],
+    "persistent": false
+  }
 }

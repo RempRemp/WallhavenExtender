@@ -55,9 +55,9 @@
 				}, "*");
 			} else if (event.data.id == "similar_overlay_created") {
 				insertThumbnailLinks($(".overlay-content"));	
+			} else if (event.data.id == "inject_loaded") {
+				insertPageThumbnailLinks();
 			}
 		}
 	});
-
-	insertPageThumbnailLinks();
 })();
