@@ -1,6 +1,6 @@
 {
   "name": "Wallhaven Extender",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "manifest_version": 2,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
