@@ -58,21 +58,14 @@
 				title: "Download"
 			})
 			.click(function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-
+				// validation at this point is assumed, so just take the extension from the url
 				var wallId = weeUtil.idFromUrl(this.href);
-				
-				// stop the click if we need to validate the file type
-				if (!wee.validateFileType($(this), wallId, true)) {
-					return;
-				}
 
 				window.postMessage({ 
 					type: "from_inject", 
 					id: "download_image",
 					wallId: wallId,
-					extension: this.dataset.extension
+					extension: this.href.endsWith("png") ? "png" : "jpg"
 				}, "*");
 			})
 			.tipsy(weeUtil.tipsySettings)
