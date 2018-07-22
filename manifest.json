@@ -1,6 +1,6 @@
 {
   "name": "Wallhaven Extender",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "manifest_version": 2,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
@@ -15,6 +15,9 @@
     "downloads",
     "storage"
   ],
+  "browser_action": {
+    "default_icon": "icons/icon32.png"
+  },
   "content_scripts": [
     {
       "matches": [
