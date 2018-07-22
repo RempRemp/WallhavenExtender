@@ -1,12 +1,13 @@
 {
   "name": "Wallhaven Extender",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "manifest_version": 2,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
-    "128": "icons/icon128.png",
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
     "48": "icons/icon48.png",
-    "32": "icons/icon32.png"
+	"128": "icons/icon128.png"
   },
   "permissions": [
     "*://alpha.wallhaven.cc/*",
