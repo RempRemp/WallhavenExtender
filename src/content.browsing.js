@@ -1,8 +1,7 @@
-// this only runs on alpha.wallhaven.cc/settings/browsing
+// this only runs on wallhaven.cc/settings/browsing
 // so update our local "mark as seen" data whenever this page is accessed
 (function() {
-	//if ($("#mark_seen_wallpapers").prop("checked")) {
-	if ($(".checkboxes label[for=mark-seen-wallpapers] span.checked").css('display') !== "none") {
+	if (document.querySelector("#mark-seen-wallpapers").checked === true) {
 		chrome.storage.local.set({
 			"mark-as-seen": true
 		});

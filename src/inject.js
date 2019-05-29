@@ -1,63 +1,61 @@
 (function() {
-	var insertPageThumbnailLinks = function() {
-		$(weeUtil.pageSelector).each(function(i) {
-			insertThumbnailLinks($(this));
-		})
-	}
-
-	var insertThumbnailLinks = function(parent) {
-		// don't add the links to the same thumbnails more than once
-		if (parent.data("wee-download-added") === true)
-			return true;
-
-		parent.find("figure.thumb").each(function(i) {
-			wee.addDownloadLink($(this));
-			wee.addPopoutLink($(this), true);
+	var insertThumbnailLinksForAllPages = function() {
+		document.querySelectorAll(wexUtil.pageSelector).forEach(page => {
+			insertThumbnailLinks(page);
 		});
 
-		// add a button to mass download all the images on this thumbnail page
-		// var downloadAll = $("<a href='#'></a>")
-		// 	.prop({
-		// 		title: "Download page"
-		// 	})
-		// 	.css({
-		// 		marginLeft: "10px"
-		// 	})
-		// 	.click(function(e) {
-		// 		// find each individual download link that we created and click them
-		// 		$(this).parents(".thumb-listing-page").eq(0).find(".wee-download-link").each(function() {
-		// 			this.click();
-		// 		});
-				
-		// 		e.preventDefault();
-		// 	})
-		// 	.tipsy(wee.tipsySettings)
-		// 	.append("<i class='fa fa-download'></i>");
+		wexUtil.postMessage("inject.thumbsProcessed");
+	};
 
-		// parent.children("header").eq(0).append(downloadAll);
-
-		// mark this parent so it isn't processed again
-		parent.data("wee-download-added", true);
-	}
-
-	window.addEventListener("message", function(event) {
-		if (event.source != window || event.type != "message")
+	// a "page" in this context means an element that contains a list of thumbnails
+	var insertThumbnailLinks = function(page) {
+		// don't add the links to the same thumbnails more than once
+		if (page.dataset.wexDownloadAdded)
 			return;
 
-		if (event.data.type == "from_content") {
-			if (event.data.id == "page_added") {
-				insertPageThumbnailLinks();
+		//console.log("added to page " + page.dataset.wexDownloadAdded);
+		//console.log(page);
+		page.querySelectorAll("figure.thumb").forEach(thumb => {
+			wexInject.addDownloadLinkToFigure(thumb);
+			wexInject.addPopoutLinkToFigure(thumb, true);
+		});
 
-				// fire this back so that we have a "page added" event that guarantees our thumbnail data to be set
-				window.postMessage({ 
-					type: "from_inject", 
-					id: "page_added",
-				}, "*");
-			} else if (event.data.id == "similar_overlay_created") {
-				insertThumbnailLinks($(".overlay-content"));	
-			} else if (event.data.id == "inject_loaded") {
-				insertPageThumbnailLinks();
-			}
+		// mark this page so it isn't processed again
+		page.dataset.wexDownloadAdded = true;
+	};
+
+	wexUtil.onMessage("content.injectLoaded", function(data) {
+		if (wexUtil.isForum) {
+			// there is no "page" in the forum, so just process each thumbnail individually
+			document.querySelectorAll("figure.thumb").forEach(figure => {
+				if (figure.dataset.wexDownloadAdded)
+					return;
+
+				wexInject.addDownloadLinkToFigure(figure);
+				wexInject.addPopoutLinkToFigure(figure, false);
+
+				figure.dataset.wexDownloadAdded = true;
+			});
+
+			wexUtil.postMessage("inject.thumbsProcessed");
+		} else {
+			insertThumbnailLinksForAllPages();
+		}
+	});
+
+	wexUtil.onMessage("content.pageAdded", function(data) {
+		insertThumbnailLinksForAllPages();
+	});
+
+	wexUtil.onMessage("content.similarOverlayCreated", function(data) {
+		if (wexUtil.isForum)
+			return;
+
+		var page = document.querySelector(".overlay-content");
+
+		if (page) {
+			insertThumbnailLinks(page);
+			wexUtil.postMessage("inject.thumbsProcessed");
 		}
 	});
 })();

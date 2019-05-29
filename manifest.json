@@ -1,6 +1,6 @@
 {
   "name": "Wallhaven Extender",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "manifest_version": 2,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
@@ -10,8 +10,7 @@
 	"128": "icons/icon128.png"
   },
   "permissions": [
-    "*://alpha.wallhaven.cc/*",
-    "*://wallhaven.cc/*",
+    "*://*.wallhaven.cc/",
     "downloads",
     "storage"
   ],
@@ -21,66 +20,36 @@
   "content_scripts": [
     {
       "matches": [
-        "*://alpha.wallhaven.cc/*",
-        "*://wallhaven.cc/*"
+        "*://*.wallhaven.cc/*"
       ],
       "exclude_matches": [
-        "*://alpha.wallhaven.cc/forums/*",
-        "*://wallhaven.cc/forums/*",
-        "*://alpha.wallhaven.cc/settings/*"
+        "*://*.wallhaven.cc/settings/*"
       ],
       "css": [       
-        "lib/lightbox2/lightbox.css",
+        "lib/simpleLightbox-2.1.0/simpleLightbox.css",
         "src/content.css"
       ],
       "js": [
-        "lib/jquery/jquery-2.1.4.min.js",
-        "lib/lightbox2/lightbox.js",
+        "lib/simpleLightbox-2.1.0/simpleLightbox.js",
         "src/util.js",
-        "src/content_common.js",
+        "src/content.common.js",
         "src/content.js"
       ]
     },
     {
       "matches": [
-        "*://alpha.wallhaven.cc/forums/*",
-        "*://wallhaven.cc/forums/*"
-      ],
-      "exclude_matches": [
-        "*://alpha.wallhaven.cc/settings/*"
-      ],
-      "css": [
-        "lib/lightbox2/lightbox.css",
-        "src/content.css"
+        "*://*.wallhaven.cc/settings/browsing/*"
       ],
       "js": [
-        "lib/jquery/jquery-2.1.4.min.js",
-        "lib/lightbox2/lightbox.js",
-        "src/util.js",
-        "src/content_common.js",
-        "src/forum/content_forum.js"
-      ]
-    },
-    {
-      "matches": [
-        "*://alpha.wallhaven.cc/settings/browsing/*"
-      ],
-      "js": [
-        "lib/jquery/jquery-2.1.4.min.js",
-        "src/content_browsing.js"
+        "src/content.browsing.js"
       ]
     }
   ],
   "web_accessible_resources": [
     "src/util.js",
     "src/inject.js",
-    "src/forum/inject_forum.js",
-    "src/inject_common.js",
-    "src/inject_lightbox.js",
-    "lib/lightbox2/images/close.png",
-    "lib/lightbox2/images/loading.gif",
-    "lib/lightbox2/images/next.png",
-    "lib/lightbox2/images/prev.png"
+    "src/inject.common.js",
+    "src/inject.lightbox.js"
   ],
   "background": {
     "scripts": [

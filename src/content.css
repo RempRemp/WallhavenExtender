@@ -1,9 +1,9 @@
-.wee-lb-desc {
+.wex-lightbox-link {
 	display: inline;
 	margin-right: 15px;
 }
 
-.thumb>.thumb-info>.wee-link {
+.thumb>.thumb-info>.wex-link {
 	position: absolute;
 	top: 0;
 	line-height: inherit;
@@ -11,15 +11,19 @@
 	margin-right: 0.5em;
 }
 
-.wee-download-link {
+.thumb>.thumb-info .png {
+	right: 80px !important;
+}
+
+.wex-download-link {
 	right: 25px;
 }
 
-.wee-popout-link {
+.wex-popout-link {
 	right: 50px;
 }
 
-.wee-lb-desc.wee-lb-fav, .wee-lb-desc.wee-lb-unfav {	
+.wex-lightbox-link.wex-lightbox-fav, .wex-lightbox-link.wex-lightbox-unfav {	
 	border-radius: 1.5em;
 	border: 1px solid white;
 	text-shadow: 0 1px 1px #000;
@@ -27,23 +31,36 @@
 	margin-left: 5px;
 }
 
-.wee-lb-desc.wee-lb-fav {
+.wex-lightbox-link.wex-lightbox-fav.disabled, .wex-lightbox-link.wex-lightbox-unfav.disabled {
+	background-color: grey !important;
+	opacity: 0.2 !important;
+}
+
+.wex-lightbox-link.wex-lightbox-fav {
 	background-color: #d5bf2a;
 }
 
-.wee-lb-desc.wee-lb-fav:hover {
+.wex-lightbox-link.wex-lightbox-fav:hover {
 	background-color: #e6d97f;
 }
 
-.wee-lb-desc.wee-lb-unfav {
+.wex-lightbox-link.wex-lightbox-unfav {
 	background-color: #490;
 }
 
-.wee-lb-desc.wee-lb-unfav:hover {
+.wex-lightbox-link.wex-lightbox-unfav:hover {
 	background-color: #d33;
 	text-shadow: 0 1px 1px #700;
 }
 
-.wee-lb-desc.wee-lb-unfav:hover .fa:before {
+.wex-lightbox-link.wex-lightbox-unfav:hover .fa:before {
 	content: "\f00d"
+}
+
+.wex-lightbox-links {
+	display: inline-block;
+}
+
+.noscroll {
+	overflow: hidden;
 }
