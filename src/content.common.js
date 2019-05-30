@@ -96,7 +96,7 @@ var wexCommon = (function() {
 							if (node.classList.contains("thumb-listing-page"))
 								pageAdded(node);
 						}
-						 console.log("added " + mutation.addedNodes.length + ": ", mutation.addedNodes);
+						//console.log("added " + mutation.addedNodes.length + ": ", mutation.addedNodes);
 					}
 
 					// pages are removed (for performance) once too many are loaded in
@@ -109,7 +109,7 @@ var wexCommon = (function() {
 								pageRemoved(node);
 						}
 
-						console.log("removed " + mutation.removedNodes.length + ": ", mutation.removedNodes);
+						//console.log("removed " + mutation.removedNodes.length + ": ", mutation.removedNodes);
 					}
 				}
 			});    
@@ -131,7 +131,7 @@ var wexCommon = (function() {
 	if (document.querySelector("#showcase-sidebar")) {
 		var searchSimilarLink = document.querySelector(".link[data-href*='wallhaven.cc/wallpaper/similar/'");
 		var overlayInner = document.querySelector("section.overlay-inner");
-        console.log(searchSimilarLink);
+        
 		// don't strictly need to check both (one implies the other), but let's do it anyway
 		if (searchSimilarLink && overlayInner) {
 			var observer = new MutationObserver(function(mutations) {
