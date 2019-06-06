@@ -24,8 +24,7 @@ wexCommon.ready(function() {
 		// top: rect.top + document.body.scrollTop,
 		// left: rect.left + document.body.scrollLeft
 		// }
-		//scrollOffset = $(window).scrollTop() - image.offset().top;	
-		scrollOffset = window.scrollY - rect.top;
+		scrollOffset = rect.top;
 	});
 
 	wexUtil.onMessage("content.lightboxUpdated", function(data) {
@@ -46,8 +45,8 @@ wexCommon.ready(function() {
 		//console.log("scrolled to: " + scrollOffset + " + " + (figure.getBoundingClientRect().top + window.scrollY) + " [" + figure.dataset.wallpaperId + "]");	
 		// scroll the page to be in line with the image we are showing in the lightbox
 		// this (handily) forces the page to load in new thumbnail pages as we scroll down
-		window.scroll(0, (figure.getBoundingClientRect().top + window.scrollY) + scrollOffset); 
-		
+		window.scroll(0, (figure.getBoundingClientRect().top + window.scrollY) - scrollOffset); 
+
 		document.body.classList.add("noscroll");
 
 		// move the lightbox back to the correct central position in the window
