@@ -1,7 +1,7 @@
 {
   "name": "Wallhaven Extender",
-  "version": "1.0.0",
-  "manifest_version": 2,
+  "version": "1.0.1",
+  "manifest_version": 3,
   "description": "Adds download and slideshow links directly onto images on Wallhaven.cc",
   "icons": {
     "16": "icons/icon16.png",
@@ -10,11 +10,13 @@
 	"128": "icons/icon128.png"
   },
   "permissions": [
-    "*://*.wallhaven.cc/",
     "downloads",
     "storage"
   ],
-  "browser_action": {
+  "host_permissions": [
+    "*://*.wallhaven.cc/"
+  ],
+  "action": {
     "default_icon": "icons/icon32.png"
   },
   "content_scripts": [
@@ -46,15 +48,19 @@
     }
   ],
   "web_accessible_resources": [
-    "src/util.js",
-    "src/inject.js",
-    "src/inject.common.js",
-    "src/inject.lightbox.js"
+    {
+      "resources": [
+        "src/util.js",
+        "src/inject.js",
+        "src/inject.common.js",
+        "src/inject.lightbox.js"
+      ],
+      "matches": [
+        "*://*.wallhaven.cc/*"
+      ]
+    }    
   ],
   "background": {
-    "scripts": [
-      "src/background.js"
-    ],
-    "persistent": false
+    "service_worker": "src/background.js"
   }
 }

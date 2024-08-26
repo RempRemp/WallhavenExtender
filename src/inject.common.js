@@ -7,9 +7,9 @@ var wexInject = (function() {
         var a = wexUtil.createElement("<a class='wex-download-link wex-link'><i class='fa fa-fw fa-download'></i></a>");
         a.href = wexUtil.buildWallpaperDirectUrl(wallId) + "." + extension;
         a.title = "Download";
-        a.addEventListener("click", function() {
-            event.preventDefault();
-            event.stopPropagation();
+        a.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
             wexUtil.postMessage("inject.downloadImage", {
                 wallId: wallId,

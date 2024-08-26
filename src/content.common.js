@@ -182,7 +182,7 @@ var wexCommon = (function() {
 
             paths.forEach(path => {
                 var script = document.createElement("script");
-                script.src = chrome.extension.getURL(path);
+                script.src = chrome.runtime.getURL(path);
                 script.async = false;
                 script.onload = loadCallback;
                 
